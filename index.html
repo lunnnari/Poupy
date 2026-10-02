@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="">
+<title>Poupy — Juntos por um consumo mais inteligente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
+<style>
+/* =========================================================
+   1. CORES E MEDIDAS (variáveis CSS)
+   Todas as cores ficam aqui. Para mudar o visual, altere só este bloco.
+   ========================================================= */
+:root{
+  --fonte:'Nunito','Trebuchet MS',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --primario:#2C5A3B;        /* verde escuro da marca */
+  --sobre-primario:#F6F9EE;  /* texto sobre o verde escuro */
+  --marca:#2C5A3B;           /* cor do nome "Poupy" */
+  --verde:#3F7F4A;
+  --verde-medio:#4E9A55;
+  --lima:#9DC73F;
+  --ambar:#C98F2B;
+  --fundo:#F3F7EA;
+  --papel:#FCFDF8;
+  --texto:#1E3325;
+  --suave:#586D5D;
+  --linha:#DCE5D0;
+  --realce:#E4EED3;
+  --externo:#CDAE82;         /* cor de papel kraft, fora do celular */
+  --erro:#B3402F;
+  --coracao:#D4533B;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --primario:#4E9A55; --sobre-primario:#0E1A12; --marca:#A9D67A;
+    --fundo:#111B15; --papel:#1A2A20; --texto:#E4EEDF; --suave:#9DB0A2;
+    --linha:#2B3E31; --realce:#223428; --externo:#0B120E; --erro:#E5806F;
+  }
+}
+:root[data-theme="dark"]{
+  --primario:#4E9A55; --sobre-primario:#0E1A12; --marca:#A9D67A;
+  --fundo:#111B15; --papel:#1A2A20; --texto:#E4EEDF; --suave:#9DB0A2;
+  --linha:#2B3E31; --realce:#223428; --externo:#0B120E; --erro:#E5806F;
+}
+
+/* =========================================================
+   2. BASE
+   ========================================================= */
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{height:100%;margin:0}
+body{
+  font-family:var(--fonte);font-size:15px;line-height:1.4;color:var(--texto);
+  background-color:var(--externo);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .12 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  display:grid;place-items:center;-webkit-font-smoothing:antialiased;
+}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:3px solid var(--lima);outline-offset:2px}
+.i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i.cheio{fill:currentColor;stroke:none}
+
+/* O "celular": uma coluna estreita centralizada */
+.telefone{
+  position:relative;width:min(100vw,430px);height:100dvh;background:var(--fundo);
+  overflow:hidden;display:flex;flex-direction:column;
+}
+@media (min-width:520px){
+  .telefone{height:min(900px,calc(100dvh - 32px));border-radius:38px;box-shadow:0 24px 60px rgba(30,20,5,.35)}
+}
+#tela{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:104px;scrollbar-width:none}
+#tela::-webkit-scrollbar{display:none}
+#tela.sem-nav{padding-bottom:24px}
+
+/* =========================================================
+   3. COMPONENTES REUTILIZÁVEIS
+   ========================================================= */
+.botao{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;
+  border:2px solid var(--primario);border-radius:15px;background:var(--primario);color:var(--sobre-primario);
+  font-weight:800;font-size:16px;padding:0 18px;
+}
+.botao:disabled{opacity:.6;cursor:default}
+.botao.claro{background:transparent;color:var(--primario)}
+.link{background:none;border:0;color:var(--primario);font-weight:700;padding:10px;text-decoration:underline;text-underline-offset:3px}
+.icone-btn{
+  position:relative;width:44px;height:44px;border:0;border-radius:14px;background:transparent;color:var(--texto);
+  display:grid;place-items:center;flex:none;
+}
+.selo{
+  position:absolute;top:3px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+  background:var(--ambar);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;
+}
+.topo{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 6px}
+.topo h1{font-size:19px;font-weight:800}
+.topo-sub{display:grid;grid-template-columns:44px 1fr 44px;text-align:center}
+.marca{display:flex;align-items:center;gap:6px;font-weight:900;font-size:24px;color:var(--marca);letter-spacing:-.3px}
+.logo-mini{width:36px;height:36px}
+.busca{
+  display:flex;align-items:center;gap:10px;margin:8px 16px;padding:0 14px;height:48px;
+  background:var(--papel);border:1.5px solid var(--linha);border-radius:15px;color:var(--suave);
+}
+.busca input{flex:1;min-width:0;border:0;outline:0;background:transparent;height:100%;color:var(--texto)}
+.busca:focus-within{border-color:var(--verde-medio)}
+.secao{display:flex;align-items:baseline;justify-content:space-between;margin:22px 16px 10px}
+.secao h2{font-size:17px;font-weight:800}
+.secao button{background:none;border:0;color:var(--verde-medio);font-weight:700;font-size:13px;padding:4px}
+.vazio{text-align:center;padding:48px 32px;color:var(--suave)}
+.vazio .grande{font-size:44px;margin-bottom:8px}
+.vazio h2{color:var(--texto);font-size:18px;margin-bottom:6px}
+.vazio .botao{margin-top:18px;width:auto;display:inline-flex}
+.erro{color:var(--erro);font-weight:700;font-size:13px;margin:8px 0 0}
+.aviso{
+  position:absolute;left:16px;right:16px;bottom:96px;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;border-radius:14px;background:var(--primario);color:var(--sobre-primario);font-weight:700;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s,transform .2s;
+}
+.aviso.visivel{opacity:1;transform:none;pointer-events:auto}
+.aviso button{background:none;border:0;color:inherit;font-weight:900;text-decoration:underline;padding:4px}
+
+/* =========================================================
+   4. LOGIN
+   ========================================================= */
+.tela-login{position:relative;padding:44px 26px 28px;min-height:100%}
+.folhas{position:absolute;width:150px;pointer-events:none}
+.folhas.topo-esq{top:-10px;left:-20px}
+.folhas.base-dir{bottom:-14px;right:-20px;transform:rotate(180deg)}
+.login-marca{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
+.login-marca svg{width:78px;height:78px}
+.login-marca span{font-size:52px;font-weight:900;letter-spacing:-1.5px;color:var(--marca)}
+.login-frase{text-align:center;color:var(--suave);margin-bottom:26px}
+.abas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.abas button{height:46px;border-radius:14px;border:0;background:var(--realce);color:var(--suave);font-weight:800}
+.abas button.ativo{background:var(--primario);color:var(--sobre-primario)}
+.campo{display:flex;align-items:center;gap:10px;height:52px;padding:0 14px;margin-bottom:12px;background:var(--papel);border:1.5px solid var(--linha);border-radius:14px;color:var(--suave)}
+.campo input{flex:1;min-width:0;border:0;outline:0;background:transparent;height:100%;color:var(--texto)}
+.campo:focus-within{border-color:var(--verde-medio)}
+.campo button{border:0;background:none;color:var(--suave);padding:4px;display:grid}
+.esqueci{display:block;margin:2px auto 14px;font-size:13px}
+.ou{text-align:center;color:var(--suave);margin:14px 0;font-size:13px}
+.rodape-login{text-align:center;margin-top:18px;font-size:13px;color:var(--suave)}
+
+/* =========================================================
+   5. HOME: banners, categorias, produtos
+   ========================================================= */
+.carrossel{
+  display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:8px 16px 0;border-radius:20px;
+}
+.carrossel::-webkit-scrollbar{display:none}
+.banner{
+  flex:0 0 100%;scroll-snap-align:center;position:relative;min-height:158px;padding:20px 18px;overflow:hidden;color:#F6F9EE;
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;
+}
+.banner h2{font-size:21px;font-weight:900;line-height:1.15;max-width:58%;position:relative;z-index:1}
+.banner .botao{width:auto;min-height:38px;padding:0 16px;font-size:14px;background:var(--lima);border-color:var(--lima);color:#1B3324;position:relative;z-index:1}
+.banner .arte-banner{position:absolute;right:-6px;bottom:-6px;width:52%;height:100%;display:flex;align-items:flex-end;justify-content:flex-end}
+.b1{background:linear-gradient(120deg,#25503A,#3F7F4A)}
+.b2{background:linear-gradient(120deg,#8A5A16,#C98F2B)}
+.b3{background:linear-gradient(120deg,#20404F,#3C7A86)}
+.pontos{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.pontos button{width:8px;height:8px;padding:0;border:0;border-radius:4px;background:var(--linha);transition:width .2s,background .2s}
+.pontos button.on{width:22px;background:var(--verde-medio)}
+.categorias{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:0 10px}
+.cat{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 0;color:var(--texto)}
+.cat-icone{width:58px;height:58px;border-radius:18px;background:var(--realce);display:grid;place-items:center;font-size:28px;border:1.5px solid var(--linha)}
+.grade{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px}
+.cartao-produto{
+  position:relative;background:var(--papel);border:1.5px solid var(--linha);border-radius:18px;padding:10px;
+  display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;
+}
+.cartao-produto .arte{height:112px;border-radius:12px;background:var(--realce);display:grid;place-items:center}
+.cartao-produto .arte svg{height:98px;width:auto}
+.cartao-produto h3{font-size:13.5px;font-weight:700;line-height:1.25;min-height:34px;padding-right:2px}
+.cartao-produto .preco{font-weight:900;font-size:16px;color:var(--primario)}
+.etq-novo{position:absolute;top:14px;left:14px;z-index:1;background:var(--lima);color:#1B3324;font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px}
+.fav{position:absolute;top:12px;right:12px;z-index:1;width:34px;height:34px;border-radius:50%;border:0;background:var(--papel);color:var(--suave);display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.fav .i{width:18px;height:18px}
+.fav.ativo{color:var(--coracao)}
+.fav.ativo .i{fill:var(--coracao)}
+.mais{position:absolute;right:10px;bottom:10px;width:36px;height:36px;border-radius:12px;border:0;background:var(--primario);color:var(--sobre-primario);display:grid;place-items:center}
+.mais .i{width:20px;height:20px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 16px 12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:38px;padding:0 16px;border-radius:19px;border:1.5px solid var(--linha);background:var(--papel);font-weight:700;color:var(--suave)}
+.chip.ativo{background:var(--primario);border-color:var(--primario);color:var(--sobre-primario)}
+.contagem{padding:0 18px 10px;color:var(--suave);font-size:13px}
+.lista-cat{display:flex;flex-direction:column;gap:8px;padding:8px 16px}
+.linha-cat{display:flex;align-items:center;gap:14px;width:100%;padding:12px 14px;border-radius:16px;border:1.5px solid var(--linha);background:var(--papel);text-align:left;font-weight:700}
+.linha-cat .cat-icone{width:46px;height:46px;font-size:23px;border-radius:14px}
+.linha-cat small{display:block;color:var(--suave);font-weight:600}
+.linha-cat .i:last-child{margin-left:auto;color:var(--suave)}
+.linha-cat > span:nth-child(2){flex:1}
+
+/* =========================================================
+   6. NAVEGAÇÃO INFERIOR (arredondada) E MENU LATERAL
+   ========================================================= */
+.nav{
+  position:absolute;left:10px;right:10px;bottom:10px;height:68px;z-index:10;padding:6px;
+  display:grid;grid-template-columns:repeat(6,1fr);gap:2px;
+  background:var(--papel);border:1.5px solid var(--linha);border-radius:26px;box-shadow:0 8px 28px rgba(20,50,30,.22);
+}
+.nav button{
+  position:relative;border:0;background:none;border-radius:20px;color:var(--suave);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:700;
+}
+.nav button.ativo{color:var(--primario);background:var(--realce)}
+.nav .selo{top:2px;right:8px;min-width:16px;height:16px;font-size:10px}
+.gaveta,.modal{position:absolute;inset:0;z-index:30}
+.modal{z-index:40}
+.escuro{position:absolute;inset:0;background:rgba(10,20,14,.55);opacity:0;transition:opacity .28s}
+.gaveta.aberta .escuro,.modal.aberto .escuro{opacity:1}
+.painel{
+  position:absolute;left:0;top:0;bottom:0;width:82%;max-width:320px;background:var(--fundo);padding:26px 16px 20px;
+  display:flex;flex-direction:column;transform:translateX(-102%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  border-radius:0 26px 26px 0;overflow-y:auto;
+}
+.gaveta.aberta .painel{transform:none}
+.painel .cabeca{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.painel .cabeca svg{width:48px;height:48px}
+.painel .cabeca strong{font-size:28px;font-weight:900;color:var(--marca);line-height:1}
+.painel .frase{font-size:12.5px;color:var(--suave);margin:0 0 18px 58px;margin-top:-2px}
+.item-menu{display:flex;align-items:center;gap:14px;width:100%;padding:13px 14px;border:0;border-radius:14px;background:none;text-align:left;font-weight:700}
+.item-menu.ativo{background:var(--realce);color:var(--primario)}
+.painel .info{margin-top:auto;padding:14px;border-radius:14px;background:var(--realce);font-size:12.5px;color:var(--suave);display:grid;gap:4px}
+.painel .item-menu.sair{margin-top:10px}
+
+/* =========================================================
+   7. MODAL DO PRODUTO (folha que sobe com animação)
+   ========================================================= */
+.folha{
+  position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow-y:auto;background:var(--papel);
+  border-radius:28px 28px 0 0;transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.modal.aberto .folha{transform:none}
+.modal-arte{margin:14px 16px 0;height:210px;border-radius:20px;background:var(--realce);display:grid;place-items:center;position:relative}
+.modal-arte svg{height:180px;width:auto}
+.modal .fechar{position:absolute;top:22px;left:22px;z-index:2;background:var(--papel);box-shadow:0 2px 8px rgba(0,0,0,.15);width:38px;height:38px;border-radius:50%}
+.modal .fav{top:22px;right:22px;width:38px;height:38px}
+.modal-corpo{padding:16px 20px 24px}
+.modal-corpo h2{font-size:21px;font-weight:900}
+.avaliacao{display:flex;align-items:center;gap:6px;margin:4px 0 8px;color:var(--suave);font-size:13px}
+.avaliacao .i{width:16px;height:16px;color:var(--ambar)}
+.avaliacao b{color:var(--ambar)}
+.preco-grande{font-size:26px;font-weight:900;color:var(--primario)}
+.descricao{color:var(--suave);margin:6px 0 14px}
+.acoes-modal{display:flex;gap:12px;align-items:center}
+.qtd{display:inline-flex;align-items:center;border:1.5px solid var(--linha);border-radius:14px;flex:none;height:50px;background:var(--fundo)}
+.qtd button{width:38px;height:100%;border:0;background:none;display:grid;place-items:center;color:var(--primario)}
+.qtd button:disabled{opacity:.35}
+.qtd output{min-width:26px;text-align:center;font-weight:800}
+.qtd.pequeno{height:36px;border-radius:11px}
+.qtd.pequeno button{width:30px}
+.mini-lista{display:flex;gap:10px;overflow-x:auto;padding:4px 0;scrollbar-width:none}
+.mini-lista::-webkit-scrollbar{display:none}
+.mini{flex:0 0 108px;border:1.5px solid var(--linha);border-radius:14px;background:var(--fundo);padding:8px;text-align:left;font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:4px}
+.mini .arte{height:66px;display:grid;place-items:center}
+.mini .arte svg{height:60px;width:auto}
+.mini span{color:var(--primario);font-weight:900}
+.modal-corpo h3{font-size:15px;font-weight:800;margin:18px 0 8px}
+
+/* =========================================================
+   8. CARRINHO, PAGAMENTO, CONFIRMAÇÃO
+   ========================================================= */
+.item-carrinho{display:flex;gap:12px;align-items:center;margin:0 16px 10px;padding:12px;border-radius:18px;background:var(--papel);border:1.5px solid var(--linha)}
+.item-carrinho .arte{width:64px;height:76px;border-radius:12px;background:var(--realce);display:grid;place-items:center;flex:none}
+.item-carrinho .arte svg{height:66px;width:auto}
+.item-carrinho .info{flex:1;min-width:0}
+.item-carrinho h3{font-size:14.5px;font-weight:700}
+.item-carrinho .preco{color:var(--primario);font-weight:900;margin-bottom:6px}
+.item-carrinho .lado{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;align-self:stretch}
+.item-carrinho .lixo{background:none;border:0;color:var(--suave);padding:2px}
+.total-linha{display:flex;justify-content:space-between;align-items:baseline;margin:14px 20px 12px;font-weight:700}
+.total-linha strong{font-size:20px;font-weight:900;color:var(--primario)}
+.acao-fixa{padding:0 16px}
+.opcao-pag{display:flex;align-items:center;gap:14px;width:calc(100% - 32px);margin:0 16px 10px;padding:14px;border-radius:16px;border:1.5px solid var(--linha);background:var(--papel);text-align:left}
+.opcao-pag .ic{width:42px;height:42px;border-radius:12px;background:var(--realce);display:grid;place-items:center;color:var(--primario);flex:none}
+.opcao-pag b{display:block}
+.opcao-pag small{color:var(--suave)}
+.opcao-pag .bolinha{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid var(--linha);flex:none}
+.opcao-pag.sel{border-color:var(--verde-medio);background:var(--realce)}
+.opcao-pag.sel .bolinha{border:7px solid var(--primario);background:var(--sobre-primario)}
+.opcao-pag[aria-disabled="true"]{opacity:.65}
+.painel-cartao,.form-bloco{margin:0 16px 14px;padding:14px;border-radius:16px;background:var(--papel);border:1.5px solid var(--linha);display:grid;gap:10px}
+.painel-cartao label,.form-bloco label{display:grid;gap:4px;font-size:13px;font-weight:700;color:var(--suave)}
+.painel-cartao input,.painel-cartao select,.form-bloco input{height:46px;padding:0 12px;border-radius:12px;border:1.5px solid var(--linha);background:var(--fundo);color:var(--texto);font-weight:600;width:100%}
+.dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nota-pix{margin:0 16px 14px;padding:12px 14px;border-radius:14px;background:var(--realce);color:var(--suave);font-size:13.5px}
+.seguro{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--suave);font-size:12.5px;margin-top:12px}
+.seguro .i{width:15px;height:15px}
+.sucesso{text-align:center;padding:52px 24px 16px}
+.check{width:104px;height:104px;margin:0 auto 18px}
+.check circle{fill:var(--primario)}
+.check path{fill:none;stroke:var(--sobre-primario);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:desenhar .6s .25s ease-out forwards}
+@keyframes desenhar{to{stroke-dashoffset:0}}
+.sucesso h1{font-size:23px;font-weight:900;margin-bottom:6px}
+.sucesso p{color:var(--suave)}
+.dados-pedido{margin:22px 0;padding:14px 16px;border-radius:16px;background:var(--papel);border:1.5px solid var(--linha);display:grid;gap:8px;text-align:left}
+.dados-pedido div{display:flex;justify-content:space-between}
+.dados-pedido span{color:var(--suave)}
+.pilha{display:grid;gap:10px}
+
+/* =========================================================
+   9. PERFIL, COMPRAS E TELAS SIMPLES
+   ========================================================= */
+.perfil-topo{display:flex;align-items:center;gap:14px;padding:22px 20px 14px}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--primario);color:var(--sobre-primario);display:grid;place-items:center;font-weight:900;font-size:24px;flex:none}
+.perfil-topo strong{font-size:19px;display:block}
+.perfil-topo span{color:var(--suave);font-size:13.5px;word-break:break-all}
+.lista{margin:8px 16px;border-radius:18px;background:var(--papel);border:1.5px solid var(--linha);overflow:hidden}
+.lista .linha{display:flex;align-items:center;gap:14px;width:100%;padding:15px 16px;border:0;border-top:1.5px solid var(--linha);background:none;text-align:left;font-weight:700}
+.lista .linha:first-child{border-top:0}
+.lista .linha .i:first-child{color:var(--primario)}
+.lista .linha .i:last-child{margin-left:auto;color:var(--suave)}
+.lista .linha > span{flex:1}
+.pedido{margin:0 16px 10px;border-radius:18px;background:var(--papel);border:1.5px solid var(--linha);overflow:hidden}
+.pedido-topo{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:14px;border:0;background:none;text-align:left}
+.pedido-topo small{display:block;color:var(--suave)}
+.pedido-topo .dir{text-align:right;display:grid;gap:4px;justify-items:end}
+.pill{font-size:12px;font-weight:800;padding:3px 10px;border-radius:10px}
+.pill.andamento{background:#D6E9F7;color:#1E5A85}
+.pill.entregue{background:var(--realce);color:var(--verde)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pill.andamento{background:#1E3A4D;color:#9CCBEA}:root:not([data-theme="light"]) .pill.entregue{color:#A9D67A}}
+:root[data-theme="dark"] .pill.andamento{background:#1E3A4D;color:#9CCBEA}
+:root[data-theme="dark"] .pill.entregue{color:#A9D67A}
+.pedido-det{padding:0 14px 14px;border-top:1.5px solid var(--linha);display:grid;gap:6px;font-size:14px}
+.pedido-det div{display:flex;justify-content:space-between;gap:10px}
+.pedido-det div:first-child{margin-top:10px}
+.pedido-det .forma{color:var(--suave);font-size:13px}
+.interruptor{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border-top:1.5px solid var(--linha);font-weight:700}
+.interruptor:first-child{border-top:0}
+.interruptor small{display:block;color:var(--suave);font-weight:600}
+.interruptor input{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:15px;background:var(--linha);position:relative;flex:none;transition:background .2s;cursor:pointer}
+.interruptor input::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
+.interruptor input:checked{background:var(--primario)}
+.interruptor input:checked::after{transform:translateX(20px)}
+.notif{display:flex;gap:12px;padding:14px 16px;border-top:1.5px solid var(--linha)}
+.notif:first-child{border-top:0}
+.notif .ic{width:38px;height:38px;border-radius:12px;background:var(--realce);color:var(--primario);display:grid;place-items:center;flex:none}
+.notif small{color:var(--suave);display:block}
+details{padding:14px 16px;border-top:1.5px solid var(--linha)}
+details:first-child{border-top:0}
+summary{font-weight:800;cursor:pointer}
+details p{color:var(--suave);margin-top:8px}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important;animation-delay:0s !important}
+}
+</style>
+</head>
+<body>
+
+<!-- Símbolo do logotipo: desenhado uma única vez e reaproveitado com <use> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="logo" viewBox="0 0 100 100">
+    <circle cx="50" cy="54" r="40" fill="none" stroke="#2C5A3B" stroke-width="6" stroke-linecap="round" stroke-dasharray="215 40" transform="rotate(-55 50 54)"/>
+    <path d="M72 20c5-7 15-8 21-4-3 8-13 11-21 4z" fill="#9DC73F"/>
+    <path d="M62 20c-3-7-11-9-17-6 1 8 9 12 17 6z" fill="#B7D95E"/>
+    <path d="M30 42h36l3 34a4 4 0 0 1-4 4H31a4 4 0 0 1-4-4z" fill="#4E9A55"/>
+    <path d="M38 42v-6a10 10 0 0 1 20 0v6" fill="none" stroke="#2C5A3B" stroke-width="4" stroke-linecap="round"/>
+    <path d="M48 72c-9-3-11-12-8-19 9 1 12 9 8 19z" fill="#B7D95E"/>
+    <path d="M51 72c8-3 10-10 8-17-8 1-11 8-8 17z" fill="#D5EA9A"/>
+    <rect x="66" y="45" width="13" height="17" rx="2.5" fill="#C98F2B" transform="rotate(-14 72 54)"/>
+    <path d="M72 58c-3-2-4-4-2-5 1-1 2 0 2 1 0-1 2-2 3 0 1 2-1 3-3 4z" fill="#F6D98A"/>
+    <path d="M22 84c14-12 34-14 56-2" fill="none" stroke="#2C5A3B" stroke-width="6" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<div class="telefone" id="app">
+  <main id="tela"></main>
+  <nav class="nav" id="nav" aria-label="Navegação principal" hidden></nav>
+
+  <!-- Menu lateral (três pontinhos) -->
+  <div class="gaveta" id="gaveta" hidden>
+    <div class="escuro" data-acao="fecharGaveta"></div>
+    <aside class="painel" role="dialog" aria-modal="true" aria-label="Menu principal" id="painel-menu"></aside>
+  </div>
+
+  <!-- Caixa do produto -->
+  <div class="modal" id="modal" hidden>
+    <div class="escuro" data-acao="fecharModal"></div>
+    <div class="folha" id="folha" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"></div>
+  </div>
+
+  <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+/* =========================================================
+   POUPY — protótipo de front-end
+   Organização deste arquivo:
+   1. Ícones e dados (categorias e produtos)
+   2. Estado da aplicação (carrinho, favoritos, pedidos...)
+   3. Comunicação com o servidor (ponto de ligação com PHP/Laravel)
+   4. Telas (cada uma devolve um texto HTML)
+   5. Ações (o que acontece ao clicar)
+   6. Inicialização
+   ========================================================= */
+
+/* ---------- 1. ÍCONES E DADOS ---------- */
+const CAMINHOS = {
+  home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+  cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6"/>',
+  heart:'<path d="M12 20.5s-8-4.9-8-11A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 2.5c0 6.1-8 11-8 11z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  dots:'<circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/>',
+  voltar:'<path d="m15 5-7 7 7 7"/>',
+  proximo:'<path d="m9 5 7 7-7 7"/>',
+  lixo:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  mais:'<path d="M12 5v14M5 12h14"/>',
+  menos:'<path d="M5 12h14"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  sino:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>',
+  ajuda:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/>',
+  config:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+  sair:'<path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M16 8l4 4-4 4M20 12H9"/>',
+  olho:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  olhoFechado:'<path d="M3 3l18 18M10.6 5.1A9.9 9.9 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"/>',
+  ok:'<path d="m5 12.5 4.5 4.5L19 7"/>',
+  local:'<path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  cartao:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h4"/>',
+  pix:'<path d="M12 3 21 12 12 21 3 12z"/><path d="M12 8l4 4-4 4-4-4z"/>',
+  recibo:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+  cadeado:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  estrela:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'
+};
+const ico = (nome, extra='') => `<svg class="i ${extra}" viewBox="0 0 24 24" aria-hidden="true">${CAMINHOS[nome]}</svg>`;
+const logo = classe => `<svg class="${classe}" viewBox="0 0 100 100" aria-hidden="true"><use href="#logo"/></svg>`;
+
+const CATEGORIAS = [
+  {id:'alimentos', nome:'Alimentos', curto:'Alimentos', emoji:'🍎'},
+  {id:'bebidas', nome:'Bebidas', curto:'Bebidas', emoji:'🥤'},
+  {id:'higiene', nome:'Higiene Pessoal', curto:'Higiene', emoji:'🧴'},
+  {id:'limpeza', nome:'Limpeza', curto:'Limpeza', emoji:'🧽'},
+  {id:'utilidades', nome:'Utilidades Domésticas', curto:'Utilidades', emoji:'🍳'},
+  {id:'bebes', nome:'Bebês e Crianças', curto:'Bebês', emoji:'🍼'},
+  {id:'eletronicos', nome:'Eletrônicos', curto:'Eletrônicos', emoji:'🔌'},
+  {id:'roupas', nome:'Roupas e Calçados', curto:'Roupas', emoji:'👕'}
+];
+const categoriaPorId = id => CATEGORIAS.find(c => c.id === id);
+
+// tipo = formato do desenho | cor = cor principal | rotulo = cor da etiqueta
+const PRODUTOS = [
+  {id:1, nome:'Café Especial 500g', cat:'alimentos', preco:24.90, tipo:'saco', cor:'#5A3A22', nota:4.8, aval:124, novo:true, desc:'Café 100% arábica, sabor marcante e aroma irresistível.'},
+  {id:2, nome:'Azeite Extra Virgem 500ml', cat:'alimentos', preco:32.90, tipo:'garrafa', cor:'#7E8B2A', nota:4.7, aval:89, novo:true, desc:'Extraído a frio, com acidez máxima de 0,5%. Ideal para saladas e finalizações.'},
+  {id:3, nome:'Chocolate 70% Cacau', cat:'alimentos', preco:12.90, tipo:'barra', cor:'#4A2C20', rotulo:'#C98F2B', nota:4.6, aval:210, novo:true, desc:'Barra de 100g com cacau selecionado, sabor intenso e pouco açúcar.'},
+  {id:4, nome:'Café Tradicional 500g', cat:'alimentos', preco:18.90, tipo:'saco', cor:'#8A3A2A', nota:4.5, aval:302, novo:true, desc:'Torra média, encorpado e equilibrado para o dia a dia.'},
+  {id:5, nome:'Óleo de Soja 900ml', cat:'alimentos', preco:6.99, tipo:'garrafa', cor:'#E3B52D', nota:4.4, aval:156, novo:true, desc:'Óleo refinado, ideal para fritar e preparar receitas do cotidiano.'},
+  {id:6, nome:'Detergente Neutro 500ml', cat:'limpeza', preco:2.99, tipo:'garrafa', cor:'#2E9BD6', nota:4.6, aval:401, novo:true, desc:'Remove a gordura com facilidade e é suave para as mãos.'},
+  {id:7, nome:'Refrigerante Cola 2L', cat:'bebidas', preco:8.90, tipo:'alta', cor:'#8E1F1F', nota:4.5, aval:98, desc:'Refrigerante gelado, ótimo para compartilhar em família.'},
+  {id:8, nome:'Detergente Concentrado 500ml', cat:'limpeza', preco:4.50, tipo:'garrafa', cor:'#1FA39A', nota:4.7, aval:77, desc:'Fórmula concentrada, rende mais e limpa com menos quantidade.'},
+  {id:9, nome:'Café Gourmet 500g', cat:'alimentos', preco:29.90, tipo:'saco', cor:'#1F1A17', rotulo:'#E8D9A8', nota:4.9, aval:64, desc:'Grãos selecionados de pequenos produtores, notas de chocolate e caramelo.'},
+  {id:10, nome:'Café Orgânico 500g', cat:'alimentos', preco:34.90, tipo:'saco', cor:'#2F6B3A', nota:4.8, aval:41, desc:'Cultivado sem agrotóxicos, com certificação orgânica.'},
+  {id:11, nome:'Arroz Integral 1kg', cat:'alimentos', preco:7.90, tipo:'saco', cor:'#B99A63', nota:4.5, aval:133, desc:'Grãos integrais ricos em fibras, cozimento em cerca de 30 minutos.'},
+  {id:12, nome:'Feijão Carioca 1kg', cat:'alimentos', preco:8.49, tipo:'saco', cor:'#A1552B', nota:4.6, aval:178, desc:'Grãos selecionados, macios e saborosos depois de cozidos.'},
+  {id:13, nome:'Suco de Laranja 1L', cat:'bebidas', preco:9.90, tipo:'caixa', cor:'#EE8A1E', nota:4.4, aval:66, desc:'Suco integral, sem adição de açúcar e sem conservantes.'},
+  {id:14, nome:'Água Mineral 1,5L', cat:'bebidas', preco:2.50, tipo:'alta', cor:'#5FB4E5', nota:4.7, aval:240, desc:'Água mineral natural, sem gás.'},
+  {id:15, nome:'Sabonete em Barra 90g', cat:'higiene', preco:2.49, tipo:'barra', cor:'#E9A9B8', rotulo:'#FFFFFF', nota:4.5, aval:190, desc:'Perfume suave e espuma cremosa para toda a família.'},
+  {id:16, nome:'Shampoo Hidratante 350ml', cat:'higiene', preco:14.90, tipo:'garrafa', cor:'#8C6FC4', nota:4.6, aval:85, desc:'Hidratação profunda para cabelos secos e ressecados.'},
+  {id:17, nome:'Creme Dental 90g', cat:'higiene', preco:5.90, tipo:'caixa', cor:'#2AA6A0', nota:4.8, aval:320, desc:'Proteção contra cáries e hálito fresco por mais tempo.'},
+  {id:18, nome:'Desinfetante Lavanda 2L', cat:'limpeza', preco:7.50, tipo:'garrafa', cor:'#9A7FD0', nota:4.5, aval:92, desc:'Elimina germes e deixa um perfume de lavanda pela casa.'},
+  {id:19, nome:'Esponja Multiuso (4 un.)', cat:'utilidades', preco:4.90, tipo:'caixa', cor:'#E2C13A', rotulo:'#3F7F4A', nota:4.3, aval:58, desc:'Dupla face: lado macio para a louça e lado firme para sujeiras difíceis.'},
+  {id:20, nome:'Pote Hermético 1,2L', cat:'utilidades', preco:12.90, tipo:'pote', cor:'#3F7F4A', nota:4.7, aval:47, desc:'Tampa com vedação, mantém os alimentos frescos por mais tempo.'},
+  {id:21, nome:'Fralda Descartável M (30 un.)', cat:'bebes', preco:39.90, tipo:'caixa', cor:'#6FB6D8', nota:4.7, aval:112, desc:'Absorção prolongada e ajuste macio para o conforto do bebê.'},
+  {id:22, nome:'Fone de Ouvido com Fio', cat:'eletronicos', preco:24.90, tipo:'caixa', cor:'#3B4A5A', nota:4.2, aval:73, desc:'Som equilibrado e microfone embutido para chamadas.'},
+  {id:23, nome:'Meias Esportivas (kit com 3)', cat:'roupas', preco:19.90, tipo:'caixa', cor:'#4B6FA8', nota:4.4, aval:51, desc:'Algodão macio, com reforço no calcanhar e na ponta.'}
+];
+const porId = id => PRODUTOS.find(p => p.id === Number(id));
+
+// Desenho simples de cada produto (SVG), para não depender de imagens externas
+function arteProduto(p){
+  const c = p.cor, r = p.rotulo || '#F6F1E3';
+  const folha = '<path d="M50 78c-7-3-9-10-7-16 7 0 10 6 7 16z" fill="#4E9A55"/><path d="M50 78c7-3 9-10 7-16-7 0-10 6-7 16z" fill="#2C5A3B"/>';
+  let d = '';
+  switch(p.tipo){
+    case 'saco':
+      d = `<path d="M26 20h48l3 8v80a5 5 0 0 1-5 5H28a5 5 0 0 1-5-5V28z" fill="${c}"/><path d="M26 20h48l3 8H23z" fill="#000" opacity=".22"/><rect x="31" y="48" width="38" height="42" rx="6" fill="${r}"/>${folha}`; break;
+    case 'garrafa':
+      d = `<rect x="42" y="6" width="16" height="11" rx="3" fill="#2C5A3B"/><path d="M44 17h12v14l9 11v66a6 6 0 0 1-6 6H41a6 6 0 0 1-6-6V42l9-11z" fill="${c}"/><rect x="38" y="58" width="24" height="36" rx="5" fill="#fff" opacity=".88"/>${folha.replace(/M50 78/g,'M50 86').replace(/50 78/g,'50 86')}`; break;
+    case 'alta':
+      d = `<rect x="44" y="4" width="12" height="9" rx="3" fill="#2C5A3B"/><path d="M45 13h10v18c0 6 13 14 13 30v46a6 6 0 0 1-6 6H38a6 6 0 0 1-6-6V61c0-16 13-24 13-30z" fill="${c}" opacity=".95"/><rect x="32" y="62" width="36" height="28" fill="#fff" opacity=".9"/><path d="M38 76h24" stroke="${c}" stroke-width="5" stroke-linecap="round"/>`; break;
+    case 'barra':
+      d = `<rect x="20" y="22" width="60" height="80" rx="6" fill="${c}"/><rect x="20" y="50" width="60" height="26" fill="${r}"/><path d="M30 34h40M30 88h40" stroke="#fff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>${folha.replace(/M50 78/g,'M50 72').replace(/50 78/g,'50 72')}`; break;
+    case 'caixa':
+      d = `<rect x="22" y="20" width="56" height="88" rx="6" fill="${c}"/><rect x="22" y="20" width="56" height="14" rx="6" fill="#000" opacity=".2"/><rect x="30" y="48" width="40" height="36" rx="6" fill="${r}"/>${folha}`; break;
+    case 'pote':
+      d = `<rect x="28" y="14" width="44" height="16" rx="5" fill="${c}"/><rect x="24" y="30" width="52" height="82" rx="12" fill="#9CC3CC" opacity=".4" stroke="#7FA8B2" stroke-width="2"/><rect x="28" y="70" width="44" height="38" rx="9" fill="#E3B52D" opacity=".85"/>`; break;
+    default:
+      d = `<rect x="24" y="24" width="52" height="80" rx="8" fill="${c}"/>`;
+  }
+  return `<svg viewBox="0 0 100 120" aria-hidden="true">${d}</svg>`;
+}
+
+/* ---------- 2. ESTADO DA APLICAÇÃO ---------- */
+// O navegador guarda os dados no localStorage (usamos try/catch porque ele pode estar indisponível)
+const Guardado = {
+  ler(chave, padrao){ try{ const v = localStorage.getItem('poupy:'+chave); return v ? JSON.parse(v) : padrao; }catch(e){ return padrao; } },
+  gravar(chave, valor){ try{ localStorage.setItem('poupy:'+chave, JSON.stringify(valor)); }catch(e){} }
+};
+const brl = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normalizar = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const $ = (seletor, base=document) => base.querySelector(seletor);
+
+function criarPedido(id, dataIso, itens, status, forma){
+  const total = itens.reduce((soma, i) => soma + porId(i.id).preco * i.qtd, 0);
+  return {id, data:dataIso, itens, total, status, forma};
+}
+const PEDIDOS_INICIAIS = [
+  criarPedido('EC123455','2026-09-10T14:20:00',[{id:1,qtd:1},{id:6,qtd:2},{id:5,qtd:1}],'entregue','pix'),
+  criarPedido('EC123454','2026-09-02T09:05:00',[{id:2,qtd:1},{id:11,qtd:2},{id:14,qtd:3}],'entregue','credito')
+];
+
+const estado = {
+  logado: Guardado.ler('logado', false),
+  usuario: Guardado.ler('usuario', null),
+  carrinho: Guardado.ler('carrinho', []),          // [{id, qtd}]
+  favoritos: Guardado.ler('favoritos', []),        // [id, id, ...]
+  pedidos: Guardado.ler('pedidos', PEDIDOS_INICIAIS),
+  endereco: Guardado.ler('endereco', {}),
+  config: Guardado.ler('config', {ofertas:true, lembrete:true}),
+  // estado temporário (não é guardado)
+  rota:'', modoLogin:'entrar', busca:'', categoria:'todos', pagamento:'pix', aba:'todos', pedidoAberto:null, ultimoPedido:null
+};
+function salvar(){
+  ['logado','usuario','carrinho','favoritos','pedidos','endereco','config'].forEach(k => Guardado.gravar(k, estado[k]));
+}
+const totalItens = () => estado.carrinho.reduce((s,i) => s + i.qtd, 0);
+const subtotal = () => estado.carrinho.reduce((s,i) => s + porId(i.id).preco * i.qtd, 0);
+
+function adicionar(id, qtd=1){
+  const item = estado.carrinho.find(i => i.id === id);
+  if(item) item.qtd += qtd; else estado.carrinho.push({id, qtd});
+  salvar(); atualizarSelos();
+}
+
+/* ---------- 3. COMUNICAÇÃO COM O SERVIDOR ----------
+   Aqui é o ponto onde o PHP (Laravel) entra no projeto real.
+   Com USAR_SERVIDOR_PHP = false, o site apenas simula a resposta,
+   para funcionar como demonstração. Com true, envia os dados às rotas /api/... */
+const USAR_SERVIDOR_PHP = false;
+async function enviarAoServidor(rota, dados){
+  if(USAR_SERVIDOR_PHP){
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    const resposta = await fetch('/api' + rota, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrf},
+      body: JSON.stringify(dados)
+    });
+    if(!resposta.ok) throw new Error('Falha na comunicação com o servidor');
+    return resposta.json();
+  }
+  await new Promise(ok => setTimeout(ok, 500));   // simula o tempo de resposta
+  return {ok:true};
+}
+
+/* ---------- 4. TELAS ---------- */
+const NAV = [
+  ['home','Início','home'], ['categorias','Categorias','grid'], ['produtos','Produtos','box'],
+  ['carrinho','Carrinho','cart'], ['favoritos','Favoritos','heart'], ['perfil','Perfil','user']
+];
+// Em qual aba a rota fica marcada. '' = barra visível sem aba marcada. Rota ausente = barra escondida.
+const ABA_DA_ROTA = {
+  home:'home', categorias:'categorias', produtos:'produtos', carrinho:'carrinho', favoritos:'favoritos', perfil:'perfil',
+  compras:'perfil', dados:'perfil', enderecos:'perfil', formas:'perfil', config:'perfil', notificacoes:'', ajuda:''
+};
+
+const barraSub = (titulo, voltarPara, extra='') => `
+  <header class="topo topo-sub">
+    <button class="icone-btn" data-acao="ir" data-rota="${voltarPara}" aria-label="Voltar">${ico('voltar')}</button>
+    <h1>${titulo}</h1>
+    <span>${extra}</span>
+  </header>`;
+
+const vazio = (emoji, titulo, texto, rotulo, rota) => `
+  <div class="vazio"><div class="grande" aria-hidden="true">${emoji}</div><h2>${titulo}</h2><p>${texto}</p>
+  ${rotulo ? `<button class="botao" data-acao="ir" data-rota="${rota}">${rotulo}</button>` : ''}</div>`;
+
+function cartaoProduto(p){
+  const fav = estado.favoritos.includes(p.id);
+  return `
+  <div class="cartao-produto" role="button" tabindex="0" data-acao="abrirProduto" data-id="${p.id}" aria-label="${esc(p.nome)}, ${brl(p.preco)}">
+    ${p.novo ? '<span class="etq-novo">Novo</span>' : ''}
+    <button class="fav ${fav?'ativo':''}" data-acao="fav" data-id="${p.id}" aria-pressed="${fav}" aria-label="Favoritar ${esc(p.nome)}">${ico('heart')}</button>
+    <div class="arte">${arteProduto(p)}</div>
+    <h3>${esc(p.nome)}</h3>
+    <p class="preco">${brl(p.preco)}</p>
+    <button class="mais" data-acao="addRapido" data-id="${p.id}" aria-label="Adicionar ${esc(p.nome)} ao carrinho">${ico('mais')}</button>
+  </div>`;
+}
+
+const BANNERS = [
+  {classe:'b1', titulo:'Qualidade e variedade para sua casa!', botao:'Ver ofertas', acao:'verCategoria', cat:'todos',
+   arte:`<svg viewBox="0 0 220 150" width="100%" height="100%" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+     <ellipse cx="60" cy="118" rx="42" ry="26" fill="#6FB04A"/><ellipse cx="86" cy="104" rx="34" ry="24" fill="#8CC65A"/><ellipse cx="44" cy="100" rx="28" ry="20" fill="#4E9A55"/>
+     <circle cx="140" cy="108" r="30" fill="#D9382B"/><path d="M128 84l12 8 12-8-6 12h-12z" fill="#3F7F4A"/><circle cx="188" cy="124" r="24" fill="#E5533B"/>
+     <path d="M100 150 130 80l14 6z" fill="#EE8A1E"/><path d="M118 150 160 96l10 10z" fill="#F2A03C"/></svg>`},
+  {classe:'b2', titulo:'Bebidas geladas em oferta', botao:'Ver bebidas', acao:'verCategoria', cat:'bebidas',
+   arte:`<div style="display:flex;align-items:flex-end;height:118px;gap:2px;padding-right:12px"><div style="height:118px">${arteProduto(porId(7))}</div><div style="height:96px">${arteProduto(porId(13))}</div><div style="height:104px">${arteProduto(porId(14))}</div></div>`},
+  {classe:'b3', titulo:'Novidades de comerciantes locais', botao:'Ver novos', acao:'verCategoria', cat:'todos',
+   arte:`<div style="display:flex;align-items:flex-end;height:118px;gap:4px;padding-right:12px"><div style="height:112px">${arteProduto(porId(1))}</div><div style="height:100px">${arteProduto(porId(2))}</div><div style="height:108px">${arteProduto(porId(3))}</div></div>`}
+];
+
+const telas = {
+
+  login(){
+    const cadastro = estado.modoLogin === 'cadastro';
+    return `
+    <section class="tela-login">
+      <svg class="folhas topo-esq" viewBox="0 0 150 120" aria-hidden="true"><path d="M0 20C40 0 100 10 120 60 60 70 10 60 0 20z" fill="#9DC73F" opacity=".55"/><path d="M0 60c30-14 70-6 90 34-44 2-80-8-90-34z" fill="#4E9A55" opacity=".5"/></svg>
+      <svg class="folhas base-dir" viewBox="0 0 150 120" aria-hidden="true"><path d="M0 20C40 0 100 10 120 60 60 70 10 60 0 20z" fill="#9DC73F" opacity=".55"/><path d="M0 60c30-14 70-6 90 34-44 2-80-8-90-34z" fill="#4E9A55" opacity=".5"/></svg>
+      <div class="login-marca">${logo('')}<span>Poupy</span></div>
+      <p class="login-frase">Mais praticidade para o seu dia a dia</p>
+      <div class="abas" role="tablist">
+        <button role="tab" aria-selected="${!cadastro}" class="${!cadastro?'ativo':''}" data-acao="modo" data-modo="entrar">Entrar</button>
+        <button role="tab" aria-selected="${cadastro}" class="${cadastro?'ativo':''}" data-acao="modo" data-modo="cadastro">Cadastrar</button>
+      </div>
+      <form data-form="login" novalidate>
+        ${cadastro ? `<label class="campo">${ico('user')}<input name="nome" placeholder="Nome completo" autocomplete="name" aria-label="Nome completo"></label>` : ''}
+        <label class="campo">${ico('user')}<input name="email" placeholder="${cadastro?'E-mail':'E-mail ou CPF'}" autocomplete="username" aria-label="${cadastro?'E-mail':'E-mail ou CPF'}"></label>
+        <label class="campo">${ico('cadeado')}<input name="senha" type="password" placeholder="Senha" autocomplete="${cadastro?'new-password':'current-password'}" aria-label="Senha">
+          <button type="button" data-acao="verSenha" aria-label="Mostrar ou esconder a senha">${ico('olho')}</button></label>
+        ${cadastro ? `<label class="campo">${ico('cadeado')}<input name="confirmar" type="password" placeholder="Confirmar senha" autocomplete="new-password" aria-label="Confirmar senha"></label>` : ''}
+        ${cadastro ? '' : '<button type="button" class="link esqueci" data-acao="esqueci">Esqueceu sua senha?</button>'}
+        <p class="erro" id="erro-login" role="alert" hidden></p>
+        <button class="botao" id="botao-login" type="submit" style="margin-top:8px">${cadastro ? 'Criar conta' : 'Entrar'}</button>
+      </form>
+      <p class="ou">Ou</p>
+      <button class="botao claro" data-acao="modo" data-modo="${cadastro?'entrar':'cadastro'}">${cadastro ? 'Já tenho uma conta' : 'Criar uma conta'}</button>
+      <p class="rodape-login">Juntos por um consumo mais inteligente</p>
+    </section>`;
+  },
+
+  home(){
+    const novos = PRODUTOS.filter(p => p.novo).slice(0,6);
+    return `
+    <header class="topo">
+      <button class="icone-btn" data-acao="menu" aria-label="Abrir menu" aria-haspopup="dialog">${ico('dots')}</button>
+      <div class="marca">${logo('logo-mini')}<span>Poupy</span></div>
+      <button class="icone-btn" data-acao="ir" data-rota="carrinho" aria-label="Abrir carrinho">${ico('cart')}<span class="selo selo-carrinho" hidden></span></button>
+    </header>
+    <form class="busca" data-form="buscaHome" role="search">${ico('search')}<input name="q" type="search" placeholder="Buscar produtos, categorias..." aria-label="Buscar produtos ou categorias"></form>
+
+    <div class="carrossel" id="carrossel" tabindex="0" aria-label="Ofertas e novidades">
+      ${BANNERS.map(b => `<div class="banner ${b.classe}"><h2>${b.titulo}</h2><button class="botao" data-acao="${b.acao}" data-cat="${b.cat}">${b.botao}</button><div class="arte-banner">${b.arte}</div></div>`).join('')}
+    </div>
+    <div class="pontos" id="pontos">${BANNERS.map((b,i) => `<button class="${i===0?'on':''}" data-acao="banner" data-i="${i}" aria-label="Ir para o banner ${i+1}"></button>`).join('')}</div>
+
+    <div class="secao"><h2>Categorias mais procuradas</h2><button data-acao="ir" data-rota="categorias">Ver todas</button></div>
+    <div class="categorias">
+      ${CATEGORIAS.slice(0,5).map(c => `<button class="cat" data-acao="verCategoria" data-cat="${c.id}"><span class="cat-icone" aria-hidden="true">${c.emoji}</span>${c.curto}</button>`).join('')}
+    </div>
+
+    <div class="secao"><h2>Produtos novos</h2><button data-acao="verCategoria" data-cat="todos">Ver todos</button></div>
+    <div class="grade">${novos.map(cartaoProduto).join('')}</div>`;
+  },
+
+  categorias(){
+    return `${barraSub('Categorias','home')}
+    <div class="busca">${ico('search')}<input type="search" placeholder="Buscar categorias..." data-input="buscaCategoria" aria-label="Buscar categorias"></div>
+    <div class="lista-cat" id="lista-cat">
+      ${CATEGORIAS.map(c => {
+        const n = PRODUTOS.filter(p => p.cat === c.id).length;
+        return `<button class="linha-cat" data-nome="${normalizar(c.nome)}" data-acao="verCategoria" data-cat="${c.id}">
+          <span class="cat-icone" aria-hidden="true">${c.emoji}</span><span>${c.nome}<small>${n} ${n===1?'produto':'produtos'}</small></span>${ico('proximo')}</button>`;
+      }).join('')}
+    </div>`;
+  },
+
+  produtos(){
+    const chips = [{id:'todos', curto:'Todos'}, ...CATEGORIAS].map(c =>
+      `<button class="chip ${estado.categoria===c.id?'ativo':''}" data-acao="filtro" data-cat="${c.id}" aria-pressed="${estado.categoria===c.id}">${c.curto}</button>`).join('');
+    return `${barraSub('Produtos','home')}
+    <form class="busca" data-form="buscaProdutos" role="search">${ico('search')}<input id="campo-busca" type="search" placeholder="Buscar produtos..." value="${esc(estado.busca)}" data-input="busca" aria-label="Buscar produtos"></form>
+    <div class="chips">${chips}</div>
+    <p class="contagem" id="contagem"></p>
+    <div id="lista-produtos"></div>`;
+  },
+
+  favoritos(){
+    const lista = estado.favoritos.map(porId).filter(Boolean);
+    return `${barraSub('Favoritos','home')}
+    ${lista.length ? `<div class="grade">${lista.map(cartaoProduto).join('')}</div>`
+      : vazio('❤️','Nenhum favorito ainda','Toque no coração de um produto para guardá-lo aqui.','Ver produtos','produtos')}`;
+  },
+
+  carrinho(){
+    const n = totalItens();
+    if(!n) return `${barraSub('Carrinho','home')}${vazio('🛒','Seu carrinho está vazio','Adicione produtos para começar sua compra.','Ver produtos','produtos')}`;
+    return `${barraSub(`Carrinho (${n})`,'home',`<button class="icone-btn" data-acao="cartLimpar" aria-label="Esvaziar carrinho">${ico('lixo')}</button>`)}
+    ${estado.carrinho.map(i => {
+      const p = porId(i.id);
+      return `<div class="item-carrinho">
+        <div class="arte">${arteProduto(p)}</div>
+        <div class="info"><h3>${esc(p.nome)}</h3><p class="preco">${brl(p.preco)}</p>
+          <div class="qtd pequeno"><button data-acao="cartQtd" data-id="${p.id}" data-delta="-1" aria-label="Diminuir" ${i.qtd<=1?'disabled':''}>${ico('menos')}</button><output>${i.qtd}</output><button data-acao="cartQtd" data-id="${p.id}" data-delta="1" aria-label="Aumentar">${ico('mais')}</button></div></div>
+        <div class="lado"><button class="lixo" data-acao="cartRemover" data-id="${p.id}" aria-label="Remover ${esc(p.nome)}">${ico('lixo')}</button></div>
+      </div>`;
+    }).join('')}
+    <div class="total-linha"><span>Subtotal</span><strong>${brl(subtotal())}</strong></div>
+    <div class="acao-fixa"><button class="botao" data-acao="finalizar" id="botao-finalizar">Finalizar compra</button></div>`;
+  },
+
+  pagamento(){
+    if(!estado.carrinho.length) return `${barraSub('Pagamento','carrinho')}${vazio('🛒','Nada para pagar','Seu carrinho está vazio.','Ver produtos','produtos')}`;
+    const total = subtotal();
+    const formas = {
+      pix:['PIX','Aprovação imediata','pix'], debito:['Cartão de débito','Débito online','cartao'],
+      credito:['Cartão de crédito','Parcelamento em até 12x','cartao'], outras:['Outras formas','Novas opções em breve','mais']
+    };
+    const cartao = estado.pagamento === 'debito' || estado.pagamento === 'credito';
+    return `${barraSub('Pagamento','carrinho')}
+    <h2 class="secao" style="font-size:16px;font-weight:800">Forma de pagamento</h2>
+    <div role="radiogroup" aria-label="Forma de pagamento">
+    ${Object.entries(formas).map(([k,[nome,desc,ic]]) => `
+      <button type="button" role="radio" aria-checked="${estado.pagamento===k}" class="opcao-pag ${estado.pagamento===k?'sel':''}" data-acao="forma" data-forma="${k}" ${k==='outras'?'aria-disabled="true"':''}>
+        <span class="ic">${ico(ic)}</span><span><b>${nome}</b><small>${desc}</small></span><span class="bolinha"></span></button>`).join('')}
+    </div>
+    ${estado.pagamento === 'pix' ? '<p class="nota-pix">O código PIX é gerado quando você toca em “Pagar agora”. O pedido é confirmado assim que o pagamento for aprovado.</p>' : ''}
+    ${cartao ? `<div class="painel-cartao" id="painel-cartao">
+      <label>Número do cartão<input id="c-numero" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000" maxlength="19" data-input="numeroCartao"></label>
+      <label>Nome impresso no cartão<input id="c-nome" autocomplete="cc-name" placeholder="Como está no cartão"></label>
+      <div class="dupla"><label>Validade<input id="c-validade" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/AA" maxlength="5" data-input="validade"></label>
+        <label>Código (CVV)<input id="c-cvv" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" data-input="somenteNumeros"></label></div>
+      ${estado.pagamento === 'credito' ? `<label>Parcelas<select id="c-parcelas">${Array.from({length:12},(_,k)=>k+1).map(n=>`<option value="${n}">${n}x de ${brl(total/n)}</option>`).join('')}</select></label>` : ''}
+    </div>` : ''}
+    <div class="total-linha"><span>Total a pagar</span><strong>${brl(total)}</strong></div>
+    <div class="acao-fixa"><p class="erro" id="erro-pag" role="alert" hidden style="margin:0 4px 8px"></p>
+      <button class="botao" id="botao-pagar" data-acao="pagar">Pagar agora</button>
+      <p class="seguro">${ico('cadeado')}Pagamento seguro e criptografado</p></div>`;
+  },
+
+  sucesso(){
+    const pedido = estado.pedidos.find(p => p.id === estado.ultimoPedido);
+    if(!pedido) return telas.home();
+    const d = new Date(pedido.data);
+    return `<section class="sucesso">
+      <svg class="check" viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="50"/><path d="M30 54l16 16 30-34"/></svg>
+      <h1>Compra realizada com sucesso!</h1>
+      <p>Seu pedido foi processado e já está sendo preparado.</p>
+      <div class="dados-pedido"><div><span>Nº do pedido</span><b>#${pedido.id}</b></div>
+        <div><span>Data</span><b>${d.toLocaleDateString('pt-BR')} - ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</b></div>
+        <div><span>Total</span><b>${brl(pedido.total)}</b></div></div>
+      <div class="pilha">
+        <button class="botao" data-acao="verPedido" data-id="${pedido.id}">Ver detalhes do pedido</button>
+        <button class="botao claro" data-acao="ir" data-rota="compras">Minhas compras</button>
+        <button class="link" data-acao="ir" data-rota="home">Voltar para a página inicial</button>
+      </div></section>`;
+  },
+
+  compras(){
+    const abas = [['todos','Todos'],['andamento','Em andamento'],['entregue','Entregues']];
+    const lista = estado.pedidos.filter(p => estado.aba === 'todos' || p.status === estado.aba);
+    return `${barraSub('Minhas compras','perfil')}
+    <div class="chips">${abas.map(([k,n]) => `<button class="chip ${estado.aba===k?'ativo':''}" data-acao="aba" data-aba="${k}" aria-pressed="${estado.aba===k}">${n}</button>`).join('')}</div>
+    ${lista.length ? lista.map(p => {
+      const aberto = estado.pedidoAberto === p.id;
+      const nomeForma = {pix:'PIX', debito:'Cartão de débito', credito:'Cartão de crédito'}[p.forma] || '';
+      return `<article class="pedido">
+        <button class="pedido-topo" data-acao="pedidoToggle" data-id="${p.id}" aria-expanded="${aberto}">
+          <span><b>Pedido #${p.id}</b><small>${new Date(p.data).toLocaleDateString('pt-BR')}</small></span>
+          <span class="dir"><b>${brl(p.total)}</b><span class="pill ${p.status}">${p.status==='andamento'?'Em andamento':'Entregue'}</span></span></button>
+        ${aberto ? `<div class="pedido-det">${p.itens.map(i => `<div><span>${i.qtd}x ${esc(porId(i.id).nome)}</span><span>${brl(porId(i.id).preco*i.qtd)}</span></div>`).join('')}
+          <div class="forma"><span>Pago com ${nomeForma}</span></div></div>` : ''}
+      </article>`;
+    }).join('') : vazio('🧾','Nenhuma compra aqui','Quando você comprar, seus pedidos aparecem nesta lista.','Ver produtos','produtos')}`;
+  },
+
+  perfil(){
+    const u = estado.usuario || {nome:'Cliente Poupy', email:''};
+    const itens = [['dados','Meus dados','user'],['compras','Minhas compras','recibo'],['favoritos','Favoritos','heart'],['enderecos','Endereços','local'],['formas','Formas de pagamento','cartao'],['config','Configurações','config']];
+    return `<header class="topo"><span style="width:44px"></span><h1 style="font-size:19px;font-weight:800">Perfil</h1><span style="width:44px"></span></header>
+    <div class="perfil-topo"><div class="avatar" aria-hidden="true">${esc(iniciais(u.nome))}</div><div><strong>${esc(u.nome)}</strong><span>${esc(u.email || u.cpf || '')}</span></div></div>
+    <div class="lista">${itens.map(([r,n,ic]) => `<button class="linha" data-acao="ir" data-rota="${r}">${ico(ic)}<span>${n}</span>${ico('proximo')}</button>`).join('')}</div>`;
+  },
+
+  dados(){
+    const u = estado.usuario || {};
+    return `${barraSub('Meus dados','perfil')}
+    <form class="form-bloco" data-form="dados" novalidate>
+      <label>Nome completo<input name="nome" value="${esc(u.nome)}" autocomplete="name"></label>
+      <label>E-mail<input name="email" type="email" value="${esc(u.email)}" autocomplete="email"></label>
+      <label>CPF<input name="cpf" inputmode="numeric" value="${esc(u.cpf)}" placeholder="000.000.000-00"></label>
+      <label>Telefone<input name="telefone" type="tel" value="${esc(u.telefone)}" placeholder="(00) 00000-0000" autocomplete="tel"></label>
+      <button class="botao" type="submit">Salvar alterações</button>
+    </form>`;
+  },
+
+  enderecos(){
+    const e = estado.endereco;
+    return `${barraSub('Endereços','perfil')}
+    <form class="form-bloco" data-form="endereco" novalidate>
+      <label>CEP<input name="cep" inputmode="numeric" value="${esc(e.cep)}" placeholder="00000-000" autocomplete="postal-code"></label>
+      <label>Rua<input name="rua" value="${esc(e.rua)}" autocomplete="address-line1"></label>
+      <div class="dupla"><label>Número<input name="numero" value="${esc(e.numero)}"></label><label>Bairro<input name="bairro" value="${esc(e.bairro)}"></label></div>
+      <div class="dupla"><label>Cidade<input name="cidade" value="${esc(e.cidade)}" autocomplete="address-level2"></label><label>Estado<input name="uf" maxlength="2" value="${esc(e.uf)}" placeholder="UF" autocomplete="address-level1"></label></div>
+      <button class="botao" type="submit">Salvar endereço</button>
+    </form>`;
+  },
+
+  formas(){
+    return `${barraSub('Formas de pagamento','perfil')}
+    <div class="lista">
+      <div class="linha" style="cursor:default">${ico('pix')}<span>PIX<small style="display:block;color:var(--suave);font-weight:600">Aprovação imediata</small></span></div>
+      <div class="linha" style="cursor:default">${ico('cartao')}<span>Cartão de débito<small style="display:block;color:var(--suave);font-weight:600">Débito online</small></span></div>
+      <div class="linha" style="cursor:default">${ico('cartao')}<span>Cartão de crédito<small style="display:block;color:var(--suave);font-weight:600">Parcelamento em até 12x</small></span></div>
+    </div>
+    <p class="nota-pix">Por segurança, os dados do cartão são pedidos em cada compra. O salvamento de cartões e outras formas de pagamento poderão ser adicionados depois.</p>`;
+  },
+
+  config(){
+    return `${barraSub('Configurações','perfil')}
+    <div class="lista">
+      <label class="interruptor"><span>Ofertas e promoções<small>Receber avisos de novos banners e descontos</small></span><input type="checkbox" role="switch" data-config="ofertas" ${estado.config.ofertas?'checked':''}></label>
+      <label class="interruptor"><span>Lembrete de carrinho<small>Avisar quando houver itens esquecidos</small></span><input type="checkbox" role="switch" data-config="lembrete" ${estado.config.lembrete?'checked':''}></label>
+    </div>
+    <div style="padding:8px 16px"><button class="botao claro" data-acao="sair">${ico('sair')} Sair da conta</button></div>`;
+  },
+
+  notificacoes(){
+    return `${barraSub('Notificações','home')}
+    <div class="lista">
+      <div class="notif"><span class="ic">${ico('sino')}</span><div><b>Bem-vindo ao Poupy!</b><small>Explore as categorias e monte seu primeiro carrinho.</small></div></div>
+      <div class="notif"><span class="ic">${ico('box')}</span><div><b>Novos produtos</b><small>Comerciantes adicionaram itens esta semana.</small></div></div>
+      <div class="notif"><span class="ic">${ico('cartao')}</span><div><b>Pague com PIX</b><small>Aprovação imediata e sem taxas extras.</small></div></div>
+    </div>`;
+  },
+
+  ajuda(){
+    return `${barraSub('Ajuda','home')}
+    <div class="lista">
+      <details><summary>Como faço uma compra?</summary><p>Encontre um produto, adicione ao carrinho, toque em “Finalizar compra” e escolha a forma de pagamento.</p></details>
+      <details><summary>Quais formas de pagamento existem?</summary><p>PIX, cartão de débito e cartão de crédito em até 12x. Outras formas serão adicionadas depois.</p></details>
+      <details><summary>Onde vejo meus pedidos?</summary><p>Em Perfil, na opção “Minhas compras”. Lá você acompanha o que está em andamento e o que já foi entregue.</p></details>
+      <details><summary>Como guardo um produto para depois?</summary><p>Toque no coração do produto. Ele fica salvo na aba Favoritos.</p></details>
+    </div>`;
+  }
+};
+
+const iniciais = nome => String(nome || 'P').trim().split(/\s+/).slice(0,2).map(s => s[0]).join('').toUpperCase();
+
+// Lista filtrada da página de produtos (busca + categoria)
+function listaProdutos(){
+  const q = normalizar(estado.busca.trim());
+  const lista = PRODUTOS.filter(p => {
+    const daCategoria = estado.categoria === 'todos' || p.cat === estado.categoria;
+    const naBusca = !q || normalizar(p.nome).includes(q) || normalizar(categoriaPorId(p.cat).nome).includes(q);
+    return daCategoria && naBusca;
+  });
+  const contagem = $('#contagem');
+  if(contagem) contagem.textContent = `${lista.length} ${lista.length === 1 ? 'produto encontrado' : 'produtos encontrados'}`;
+  return lista.length ? `<div class="grade">${lista.map(cartaoProduto).join('')}</div>`
+    : vazio('🔎','Nenhum produto encontrado','Tente outra palavra ou escolha outra categoria.','Limpar filtros','produtos-limpar');
+}
+
+/* ---------- 5. DESENHO DA TELA, NAVEGAÇÃO E AÇÕES ---------- */
+let timerCarrossel;
+const rotaDoHash = () => location.hash.replace(/^#\//,'').split('?')[0];
+
+function desenhar(rotaPedida){
+  clearInterval(timerCarrossel);
+  let rota = rotaPedida ?? rotaDoHash();
+  if(!estado.logado) rota = 'login';
+  else if(!rota || rota === 'login') rota = 'home';
+  if(!telas[rota]) rota = 'home';
+  estado.rota = rota;
+  const tela = $('#tela');
+  tela.innerHTML = telas[rota]();
+  tela.scrollTop = 0;
+  if(rota === 'produtos') $('#lista-produtos').innerHTML = listaProdutos();
+  atualizarNav(rota);
+  atualizarSelos();
+  if(rota === 'home') iniciarCarrossel();
+}
+
+function ir(rota){
+  fecharGaveta(true); fecharModal(true);
+  if(rota === 'produtos-limpar'){ estado.busca = ''; estado.categoria = 'todos'; rota = 'produtos'; }
+  try{ location.hash = '#/' + rota; }catch(e){}
+  desenhar(rota);
+}
+window.addEventListener('hashchange', () => { if(rotaDoHash() !== estado.rota) desenhar(); });
+
+function atualizarNav(rota){
+  const nav = $('#nav');
+  const aba = ABA_DA_ROTA[rota];
+  nav.hidden = aba === undefined;
+  $('#tela').classList.toggle('sem-nav', aba === undefined);
+  nav.innerHTML = NAV.map(([r,nome,ic]) => `
+    <button data-acao="ir" data-rota="${r}" class="${aba===r?'ativo':''}" ${aba===r?'aria-current="page"':''}>
+      ${ico(ic)}<span>${nome}</span>${r==='carrinho' ? '<span class="selo selo-carrinho" hidden></span>' : ''}</button>`).join('');
+}
+function atualizarSelos(){
+  const n = totalItens();
+  document.querySelectorAll('.selo-carrinho').forEach(s => { s.textContent = n; s.hidden = n === 0; });
+}
+
+let temporizadorAviso;
+function aviso(texto, rotuloAcao, rotaAcao){
+  const el = $('#aviso');
+  el.innerHTML = `<span>${texto}</span>` + (rotuloAcao ? `<button data-acao="ir" data-rota="${rotaAcao}">${rotuloAcao}</button>` : '');
+  el.classList.add('visivel');
+  clearTimeout(temporizadorAviso);
+  temporizadorAviso = setTimeout(() => el.classList.remove('visivel'), 2800);
+}
+
+/* Carrossel de banners: rolagem nativa com "snap"; os pontinhos acompanham */
+function iniciarCarrossel(){
+  const c = $('#carrossel'); if(!c) return;
+  const pontos = [...document.querySelectorAll('#pontos button')];
+  const atual = () => Math.round(c.scrollLeft / c.clientWidth);
+  c.addEventListener('scroll', () => pontos.forEach((p,i) => p.classList.toggle('on', i === atual())), {passive:true});
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  timerCarrossel = setInterval(() => {
+    c.scrollTo({left: ((atual() + 1) % pontos.length) * c.clientWidth, behavior:'smooth'});
+  }, 5500);
+}
+
+/* Menu lateral */
+function abrirGaveta(){
+  const itens = [['home','Início','home'],['categorias','Categorias','grid'],['compras','Meus pedidos','recibo'],['favoritos','Favoritos','heart'],['notificacoes','Notificações','sino'],['ajuda','Ajuda','ajuda'],['config','Configurações','config']];
+  $('#painel-menu').innerHTML = `
+    <div class="cabeca">${logo('')}<strong>Poupy</strong></div>
+    <p class="frase">Juntos por um consumo mais inteligente</p>
+    ${itens.map(([r,n,ic]) => `<button class="item-menu ${estado.rota===r?'ativo':''}" data-acao="ir" data-rota="${r}">${ico(ic)}${n}</button>`).join('')}
+    <div class="info"><span>• Pague com PIX, débito ou crédito</span><span>• Pagamento seguro e criptografado</span><span>• Produtos de comerciantes locais</span></div>
+    <button class="item-menu sair" data-acao="sair">${ico('sair')}Sair</button>`;
+  const g = $('#gaveta'); g.hidden = false;
+  requestAnimationFrame(() => g.classList.add('aberta'));
+  $('#painel-menu .item-menu').focus();
+}
+function fecharGaveta(imediato){
+  const g = $('#gaveta'); if(g.hidden) return;
+  g.classList.remove('aberta');
+  if(imediato) g.hidden = true; else setTimeout(() => { if(!g.classList.contains('aberta')) g.hidden = true; }, 300);
+}
+
+/* Caixa (modal) do produto */
+let produtoAberto = null, qtdModal = 1;
+function desenharModal(){
+  const p = produtoAberto;
+  const fav = estado.favoritos.includes(p.id);
+  const parecidos = PRODUTOS.filter(x => x.cat === p.cat && x.id !== p.id).slice(0,8);
+  $('#folha').innerHTML = `
+    <div class="modal-arte">
+      <button class="icone-btn fechar" data-acao="fecharModal" aria-label="Fechar">${ico('x')}</button>
+      <button class="fav ${fav?'ativo':''}" data-acao="fav" data-id="${p.id}" aria-pressed="${fav}" aria-label="Favoritar">${ico('heart')}</button>
+      ${arteProduto(p)}
+    </div>
+    <div class="modal-corpo">
+      <h2 id="modal-titulo">${esc(p.nome)}</h2>
+      <div class="avaliacao">${ico('estrela','cheio')}<b>${String(p.nota).replace('.',',')}</b> (${p.aval} avaliações) · ${categoriaPorId(p.cat).nome}</div>
+      <p class="preco-grande">${brl(p.preco)}</p>
+      <p class="descricao">${esc(p.desc)}</p>
+      <div class="acoes-modal">
+        <div class="qtd"><button data-acao="modalQtd" data-delta="-1" id="modal-menos" aria-label="Diminuir" ${qtdModal<=1?'disabled':''}>${ico('menos')}</button><output id="modal-qtd">${qtdModal}</output><button data-acao="modalQtd" data-delta="1" aria-label="Aumentar">${ico('mais')}</button></div>
+        <button class="botao" data-acao="modalAdicionar">Adicionar ao carrinho</button>
+      </div>
+      <div style="text-align:center;margin-top:6px"><button class="link" data-acao="fecharModal">Continuar navegando</button></div>
+      ${parecidos.length ? `<h3>Produtos da mesma categoria</h3><div class="mini-lista">${parecidos.map(x => `
+        <button class="mini" data-acao="abrirProduto" data-id="${x.id}"><div class="arte">${arteProduto(x)}</div>${esc(x.nome)}<span>${brl(x.preco)}</span></button>`).join('')}</div>` : ''}
+    </div>`;
+}
+function abrirProduto(id){
+  produtoAberto = porId(id); qtdModal = 1;
+  desenharModal();
+  const m = $('#modal'); const ja = !m.hidden;
+  m.hidden = false;
+  $('#folha').scrollTop = 0;
+  if(ja){ m.classList.add('aberto'); }
+  else requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('aberto')));
+  $('#folha .fechar').focus();
+}
+function fecharModal(imediato){
+  const m = $('#modal'); if(m.hidden) return;
+  m.classList.remove('aberto');
+  if(imediato) m.hidden = true; else setTimeout(() => { if(!m.classList.contains('aberto')) m.hidden = true; }, 300);
+}
+
+function alternarFavorito(id){
+  const pos = estado.favoritos.indexOf(id);
+  if(pos >= 0) estado.favoritos.splice(pos,1); else estado.favoritos.push(id);
+  salvar();
+  const ativo = estado.favoritos.includes(id);
+  document.querySelectorAll(`.fav[data-id="${id}"]`).forEach(b => { b.classList.toggle('ativo', ativo); b.setAttribute('aria-pressed', ativo); });
+  if(estado.rota === 'favoritos') desenhar('favoritos');
+}
+
+/* Todas as ações dos botões ficam aqui. Cada botão do HTML tem data-acao="nome".
+   Um único "ouvinte de clique" (mais abaixo) procura o nome e chama a função certa. */
+const acoes = {
+  ir: d => ir(d.rota),
+  menu: () => abrirGaveta(),
+  fecharGaveta: () => fecharGaveta(),
+  abrirProduto: d => abrirProduto(d.id),
+  fecharModal: () => fecharModal(),
+  fav: d => alternarFavorito(Number(d.id)),
+  addRapido: d => { adicionar(Number(d.id)); aviso('Adicionado ao carrinho','Ver carrinho','carrinho'); },
+  modalQtd: d => {
+    qtdModal = Math.max(1, Math.min(99, qtdModal + Number(d.delta)));
+    $('#modal-qtd').textContent = qtdModal;
+    $('#modal-menos').disabled = qtdModal <= 1;
+  },
+  modalAdicionar: () => { adicionar(produtoAberto.id, qtdModal); aviso(`${qtdModal}x adicionado ao carrinho`,'Ver carrinho','carrinho'); },
+  verCategoria: d => { estado.categoria = d.cat; estado.busca = ''; ir('produtos'); },
+  filtro: d => { estado.categoria = d.cat; desenhar('produtos'); },
+  banner: d => { const c = $('#carrossel'); c.scrollTo({left: Number(d.i) * c.clientWidth, behavior:'smooth'}); },
+  modo: d => { estado.modoLogin = d.modo; desenhar('login'); },
+  verSenha: (d, el) => {
+    const campo = el.parentElement.querySelector('input');
+    const mostrar = campo.type === 'password';
+    campo.type = mostrar ? 'text' : 'password';
+    el.innerHTML = ico(mostrar ? 'olhoFechado' : 'olho');
+  },
+  esqueci: () => aviso('Recuperação de senha será enviada por e-mail em breve.'),
+  cartQtd: d => {
+    const item = estado.carrinho.find(i => i.id === Number(d.id));
+    if(item){ item.qtd = Math.max(1, Math.min(99, item.qtd + Number(d.delta))); salvar(); desenhar('carrinho'); }
+  },
+  cartRemover: d => { estado.carrinho = estado.carrinho.filter(i => i.id !== Number(d.id)); salvar(); desenhar('carrinho'); },
+  cartLimpar: () => { estado.carrinho = []; salvar(); desenhar('carrinho'); },
+  finalizar: async (d, botao) => {
+    botao.disabled = true; botao.textContent = 'Preparando pagamento...';
+    try{
+      // Aqui o PHP recebe os itens do carrinho e prepara a área de pagamento
+      await enviarAoServidor('/carrinho/finalizar', {itens: estado.carrinho, subtotal: subtotal()});
+      ir('pagamento');
+    }catch(e){ botao.disabled = false; botao.textContent = 'Finalizar compra'; aviso('Não foi possível continuar. Tente novamente.'); }
+  },
+  forma: d => {
+    if(d.forma === 'outras'){ aviso('Novas formas de pagamento serão adicionadas em breve.'); return; }
+    estado.pagamento = d.forma; desenhar('pagamento');
+  },
+  pagar: async (d, botao) => {
+    const erro = $('#erro-pag'); erro.hidden = true;
+    const forma = estado.pagamento;
+    let dadosCartao = null;
+    if(forma === 'debito' || forma === 'credito'){
+      const numero = $('#c-numero').value.replace(/\D/g,'');
+      const nome = $('#c-nome').value.trim();
+      const validade = $('#c-validade').value;
+      const cvv = $('#c-cvv').value;
+      let msg = '';
+      if(numero.length < 13) msg = 'Confira o número do cartão.';
+      else if(nome.length < 3) msg = 'Informe o nome impresso no cartão.';
+      else if(!/^(0[1-9]|1[0-2])\/\d{2}$/.test(validade)) msg = 'Informe a validade no formato MM/AA.';
+      else if(cvv.length < 3) msg = 'Informe o código de segurança (CVV).';
+      if(msg){ erro.textContent = msg; erro.hidden = false; return; }
+      // Por segurança, o número completo do cartão não é guardado no navegador
+      dadosCartao = {final: numero.slice(-4), parcelas: forma === 'credito' ? Number($('#c-parcelas').value) : 1};
+    }
+    botao.disabled = true; botao.textContent = 'Processando pagamento...';
+    try{
+      // Aqui o PHP processa o pagamento e devolve o resultado
+      await enviarAoServidor('/pagamento', {forma, cartao: dadosCartao, itens: estado.carrinho, total: subtotal()});
+    }catch(e){
+      botao.disabled = false; botao.textContent = 'Pagar agora';
+      erro.textContent = 'Não foi possível processar o pagamento. Tente novamente.'; erro.hidden = false; return;
+    }
+    const numeroPedido = 'EC' + String(Date.now() % 1000000).padStart(6,'0');
+    estado.pedidos.unshift(criarPedido(numeroPedido, new Date().toISOString(), estado.carrinho.map(i => ({...i})), 'andamento', forma));
+    estado.ultimoPedido = numeroPedido;
+    estado.carrinho = [];
+    salvar(); ir('sucesso');
+  },
+  verPedido: d => { estado.aba = 'todos'; estado.pedidoAberto = d.id; ir('compras'); },
+  aba: d => { estado.aba = d.aba; desenhar('compras'); },
+  pedidoToggle: d => { estado.pedidoAberto = estado.pedidoAberto === d.id ? null : d.id; desenhar('compras'); },
+  sair: () => { estado.logado = false; salvar(); ir('login'); }
+};
+
+/* Formulários (o Enter também envia) */
+const formularios = {
+  async login(f){
+    const d = Object.fromEntries(new FormData(f));
+    const cadastro = estado.modoLogin === 'cadastro';
+    const erro = $('#erro-login');
+    const identificador = (d.email || '').trim();
+    let msg = '';
+    if(cadastro && !(d.nome || '').trim()) msg = 'Informe seu nome completo.';
+    else if(!identificador) msg = cadastro ? 'Informe seu e-mail.' : 'Informe seu e-mail ou CPF.';
+    else if(cadastro && !/^\S+@\S+\.\S+$/.test(identificador)) msg = 'Informe um e-mail válido.';
+    else if(!d.senha) msg = 'Informe sua senha.';
+    else if(cadastro && d.senha.length < 6) msg = 'A senha precisa ter pelo menos 6 caracteres.';
+    else if(cadastro && d.senha !== d.confirmar) msg = 'As senhas não são iguais.';
+    if(msg){ erro.textContent = msg; erro.hidden = false; return; }
+    erro.hidden = true;
+    const botao = $('#botao-login'); botao.disabled = true; botao.textContent = 'Aguarde...';
+    try{
+      // Aqui o PHP confere a senha (login) ou cria a conta (cadastro)
+      await enviarAoServidor(cadastro ? '/cadastro' : '/login', {identificador, senha: d.senha, nome: d.nome});
+    }catch(e){ botao.disabled = false; botao.textContent = cadastro ? 'Criar conta' : 'Entrar'; erro.textContent = 'Não foi possível entrar. Tente novamente.'; erro.hidden = false; return; }
+    const ehEmail = identificador.includes('@');
+    if(!(estado.usuario && ehEmail && estado.usuario.email === identificador) || cadastro){
+      const prefixo = ehEmail ? identificador.split('@')[0].replace(/[._-]+/g,' ') : '';
+      estado.usuario = {
+        nome: (d.nome || '').trim() || (prefixo ? prefixo.replace(/\b\w/g, c => c.toUpperCase()) : 'Cliente Poupy'),
+        email: ehEmail ? identificador : '', cpf: ehEmail ? '' : identificador
+      };
+    }
+    estado.logado = true; salvar(); ir('home');
+  },
+  buscaHome(f){
+    estado.busca = (new FormData(f).get('q') || '').toString(); estado.categoria = 'todos'; ir('produtos');
+  },
+  buscaProdutos(f){ const c = $('#campo-busca'); if(c) c.blur(); },
+  dados(f){
+    const d = Object.fromEntries(new FormData(f));
+    estado.usuario = {...estado.usuario, nome:(d.nome||'').trim() || 'Cliente Poupy', email:(d.email||'').trim(), cpf:(d.cpf||'').trim(), telefone:(d.telefone||'').trim()};
+    salvar(); aviso('Dados salvos');
+  },
+  endereco(f){
+    estado.endereco = Object.fromEntries(new FormData(f)); salvar(); aviso('Endereço salvo');
+  }
+};
+
+/* Campos que reagem enquanto a pessoa digita */
+const entradas = {
+  busca: t => { estado.busca = t.value; $('#lista-produtos').innerHTML = listaProdutos(); },
+  buscaCategoria: t => {
+    const q = normalizar(t.value.trim());
+    document.querySelectorAll('#lista-cat .linha-cat').forEach(l => { l.hidden = !!q && !l.dataset.nome.includes(q); });
+  },
+  numeroCartao: t => { t.value = t.value.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim(); },
+  validade: t => { const v = t.value.replace(/\D/g,'').slice(0,4); t.value = v.length > 2 ? v.slice(0,2) + '/' + v.slice(2) : v; },
+  somenteNumeros: t => { t.value = t.value.replace(/\D/g,''); }
+};
+
+/* ---------- 6. INICIALIZAÇÃO: ligar os "ouvintes" de eventos ---------- */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-acao]');
+  if(!el) return;
+  const funcao = acoes[el.dataset.acao];
+  if(funcao) funcao(el.dataset, el, e);
+});
+document.addEventListener('submit', e => {
+  const f = e.target.closest('[data-form]');
+  if(!f) return;
+  e.preventDefault();
+  formularios[f.dataset.form]?.(f);
+});
+document.addEventListener('input', e => { const k = e.target.dataset?.input; if(k) entradas[k]?.(e.target); });
+document.addEventListener('change', e => {
+  const k = e.target.dataset?.config;
+  if(k){ estado.config[k] = e.target.checked; salvar(); }
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ fecharModal(); fecharGaveta(); }
+  // Cartões de produto são <div role="button">: Enter e Espaço precisam funcionar como clique
+  if((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('[role="button"][data-acao]')){ e.preventDefault(); e.target.click(); }
+});
+
+desenhar();
+</script>
+</body>
+</html>
