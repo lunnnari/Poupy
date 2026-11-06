@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="csrf-token" content="">
 <title>Poupy — Juntos por um consumo mais inteligente</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,14 +48,17 @@
 /* =========================================================
    2. BASE
    ========================================================= */
+:root{
+  --topo-seguro:env(safe-area-inset-top,0px);
+  --base-segura:env(safe-area-inset-bottom,0px);
+}
 *{box-sizing:border-box}
 [hidden]{display:none !important}
-html,body{height:100%;margin:0}
+html,body{min-height:100%;margin:0}
+html{scroll-padding-top:var(--topo-seguro)}
 body{
   font-family:var(--fonte);font-size:15px;line-height:1.4;color:var(--texto);
-  background-color:var(--externo);
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .12 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  display:grid;place-items:center;-webkit-font-smoothing:antialiased;
+  background-color:var(--fundo);-webkit-font-smoothing:antialiased;
 }
 button,input,select{font-family:inherit;font-size:inherit;color:inherit}
 button{cursor:pointer}
@@ -64,17 +67,15 @@ h1,h2,h3,p{margin:0}
 .i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .i.cheio{fill:currentColor;stroke:none}
 
-/* O "celular": uma coluna estreita centralizada */
-.telefone{
-  position:relative;width:min(100vw,430px);height:100dvh;background:var(--fundo);
-  overflow:hidden;display:flex;flex-direction:column;
-}
-@media (min-width:520px){
-  .telefone{height:min(900px,calc(100dvh - 32px));border-radius:38px;box-shadow:0 24px 60px rgba(30,20,5,.35)}
-}
-#tela{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:104px;scrollbar-width:none}
-#tela::-webkit-scrollbar{display:none}
-#tela.sem-nav{padding-bottom:24px}
+/* Estrutura da página: um site comum, com a janela inteira rolando.
+   Abaixo de 900px: aparência de aplicativo (menu inferior e topo simples).
+   A partir de 900px: cabeçalho com links, rodapé, colunas e grades largas.
+   (veja a seção 10, no fim do CSS) */
+.telefone{position:relative;min-height:100dvh;display:flex;flex-direction:column;background:var(--fundo)}
+#tela{flex:1;width:100%;max-width:1240px;margin:0 auto;overflow-x:clip;padding-bottom:calc(104px + var(--base-segura))}
+#tela.sem-nav{padding-bottom:calc(24px + var(--base-segura))}
+body.trava{overflow:hidden}
+.cab,.rodape{display:none}
 
 /* =========================================================
    3. COMPONENTES REUTILIZÁVEIS
@@ -95,7 +96,7 @@ h1,h2,h3,p{margin:0}
   position:absolute;top:3px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;
   background:var(--ambar);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;
 }
-.topo{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 6px}
+.topo{display:flex;align-items:center;justify-content:space-between;padding:calc(10px + var(--topo-seguro)) 12px 6px}
 .topo h1{font-size:19px;font-weight:800}
 .topo-sub{display:grid;grid-template-columns:44px 1fr 44px;text-align:center}
 .marca{display:flex;align-items:center;gap:6px;font-weight:900;font-size:24px;color:var(--marca);letter-spacing:-.3px}
@@ -115,7 +116,7 @@ h1,h2,h3,p{margin:0}
 .vazio .botao{margin-top:18px;width:auto;display:inline-flex}
 .erro{color:var(--erro);font-weight:700;font-size:13px;margin:8px 0 0}
 .aviso{
-  position:absolute;left:16px;right:16px;bottom:96px;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;bottom:96px;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:12px 16px;border-radius:14px;background:var(--primario);color:var(--sobre-primario);font-weight:700;
   box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s,transform .2s;
 }
@@ -125,7 +126,7 @@ h1,h2,h3,p{margin:0}
 /* =========================================================
    4. LOGIN
    ========================================================= */
-.tela-login{position:relative;padding:44px 26px 28px;min-height:100%}
+.tela-login{position:relative;padding:calc(44px + var(--topo-seguro)) 26px calc(28px + var(--base-segura));min-height:100%}
 .folhas{position:absolute;width:150px;pointer-events:none}
 .folhas.topo-esq{top:-10px;left:-20px}
 .folhas.base-dir{bottom:-14px;right:-20px;transform:rotate(180deg)}
@@ -199,7 +200,7 @@ h1,h2,h3,p{margin:0}
    6. NAVEGAÇÃO INFERIOR (arredondada) E MENU LATERAL
    ========================================================= */
 .nav{
-  position:absolute;left:10px;right:10px;bottom:10px;height:68px;z-index:10;padding:6px;
+  position:fixed;left:10px;right:10px;max-width:560px;margin:0 auto;bottom:calc(10px + var(--base-segura));height:68px;z-index:10;padding:6px;
   display:grid;grid-template-columns:repeat(6,1fr);gap:2px;
   background:var(--papel);border:1.5px solid var(--linha);border-radius:26px;box-shadow:0 8px 28px rgba(20,50,30,.22);
 }
@@ -209,12 +210,12 @@ h1,h2,h3,p{margin:0}
 }
 .nav button.ativo{color:var(--primario);background:var(--realce)}
 .nav .selo{top:2px;right:8px;min-width:16px;height:16px;font-size:10px}
-.gaveta,.modal{position:absolute;inset:0;z-index:30}
+.gaveta,.modal{position:fixed;inset:0;z-index:30}
 .modal{z-index:40}
 .escuro{position:absolute;inset:0;background:rgba(10,20,14,.55);opacity:0;transition:opacity .28s}
 .gaveta.aberta .escuro,.modal.aberto .escuro{opacity:1}
 .painel{
-  position:absolute;left:0;top:0;bottom:0;width:82%;max-width:320px;background:var(--fundo);padding:26px 16px 20px;
+  position:absolute;left:0;top:0;bottom:0;width:82%;max-width:320px;background:var(--fundo);padding:calc(26px + var(--topo-seguro)) 16px calc(20px + var(--base-segura));
   display:flex;flex-direction:column;transform:translateX(-102%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
   border-radius:0 26px 26px 0;overflow-y:auto;
 }
@@ -240,7 +241,7 @@ h1,h2,h3,p{margin:0}
 .modal-arte svg{height:180px;width:auto}
 .modal .fechar{position:absolute;top:22px;left:22px;z-index:2;background:var(--papel);box-shadow:0 2px 8px rgba(0,0,0,.15);width:38px;height:38px;border-radius:50%}
 .modal .fav{top:22px;right:22px;width:38px;height:38px}
-.modal-corpo{padding:16px 20px 24px}
+.modal-corpo{padding:16px 20px calc(24px + var(--base-segura))}
 .modal-corpo h2{font-size:21px;font-weight:900}
 .avaliacao{display:flex;align-items:center;gap:6px;margin:4px 0 8px;color:var(--suave);font-size:13px}
 .avaliacao .i{width:16px;height:16px;color:var(--ambar)}
@@ -345,6 +346,132 @@ details{padding:14px 16px;border-top:1.5px solid var(--linha)}
 details:first-child{border-top:0}
 summary{font-weight:800;cursor:pointer}
 details p{color:var(--suave);margin-top:8px}
+/* =========================================================
+   10. SITE: cabeçalho, rodapé e layouts em colunas
+   ========================================================= */
+/* Grades fluidas: o número de colunas se ajusta sozinho à largura */
+.grade{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.categorias{grid-template-columns:repeat(4,1fr);row-gap:12px}
+.resumo h2,.resumo-lista{display:none}
+.login-hero{display:none}
+.tela-login{max-width:480px;margin:0 auto}
+.logo-chip{width:46px;height:46px;border-radius:14px;background:#F6F9EE;padding:4px;flex:none}
+.logo-chip svg{width:100%;height:100%}
+
+/* Tablet (a partir de 700px) */
+@media (min-width:700px){
+  .banner{min-height:230px;padding:32px 40px}
+  .banner h2{font-size:30px;max-width:50%}
+  .categorias{grid-template-columns:repeat(8,1fr)}
+  .lista-cat{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .grade{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+  /* Telas simples ficam em uma coluna central, com margem dos lados */
+  #tela[data-rota="perfil"]>*,#tela[data-rota="dados"]>*,#tela[data-rota="enderecos"]>*,#tela[data-rota="formas"]>*,
+  #tela[data-rota="config"]>*,#tela[data-rota="notificacoes"]>*,#tela[data-rota="ajuda"]>*,#tela[data-rota="compras"]>*{
+    max-width:min(760px,calc(100% - 32px));margin-left:auto;margin-right:auto}
+  #tela[data-rota="sucesso"]>*{max-width:min(560px,calc(100% - 32px));margin-left:auto;margin-right:auto}
+  /* Caixa do produto: janela centralizada, imagem de um lado e informações do outro */
+  .folha{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-45%);width:min(94vw,860px);max-height:88vh;border-radius:28px;
+    opacity:0;transition:opacity .25s,transform .25s;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}
+  .modal.aberto .folha{opacity:1;transform:translate(-50%,-50%)}
+  .modal-arte{margin:20px 0 20px 20px;height:auto;min-height:340px;position:sticky;top:20px}
+  .modal-arte svg{height:260px}
+  .modal-corpo{padding:26px 28px 28px}
+}
+
+/* Notebook e desktop (a partir de 900px): vira site de verdade */
+@media (min-width:900px){
+  #tela{padding:8px 8px 56px}
+  #tela.sem-nav{padding-bottom:56px}
+  .nav{display:none}
+  .aviso{bottom:28px}
+  .topo:not(.topo-sub){display:none}
+  .topo-sub{display:flex;align-items:center;gap:8px;text-align:left;padding:28px 16px 6px}
+  .topo-sub h1{font-size:30px;font-weight:900}
+  .topo-sub span{margin-left:auto}
+
+  /* Cabeçalho */
+  .cab{display:block;position:sticky;top:0;z-index:20;background:var(--papel);border-bottom:1.5px solid var(--linha)}
+  .cab-in{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:24px}
+  .cab-marca{display:flex;align-items:center;gap:8px;border:0;background:none;padding:0;font-weight:900;font-size:26px;color:var(--marca);letter-spacing:-.3px}
+  .cab-marca svg{width:40px;height:40px}
+  .cab-nav{display:flex;gap:4px}
+  .cab-nav button{border:0;background:none;padding:10px 14px;border-radius:12px;font-weight:700;color:var(--suave)}
+  .cab-nav button:hover{background:var(--realce);color:var(--texto)}
+  .cab-nav button.ativo{background:var(--realce);color:var(--primario)}
+  .busca.cab-busca{flex:1;max-width:460px;margin:0 0 0 auto}
+  .cab.sem-busca .cab-busca{visibility:hidden}
+  .cab-acoes{display:flex;align-items:center;gap:4px}
+  .cab-acoes .icone-btn:hover,.cab-acoes .icone-btn.ativo{background:var(--realce)}
+  .cab-acoes .icone-btn.ativo{color:var(--primario)}
+  .icone-btn.cab-perfil{width:auto;padding:0 12px;display:flex;align-items:center;gap:8px;font-weight:700}
+
+  /* Rodapé */
+  .rodape{display:block;margin-top:24px;background:#1F3F2B;color:#E4EED3}
+  .rodape-in{max-width:1240px;margin:0 auto;padding:44px 32px 28px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:32px}
+  .marca-rod{display:flex;align-items:center;gap:10px;font-weight:900;font-size:26px;color:#fff}
+  .rodape p{margin-top:12px;max-width:300px;opacity:.8}
+  .rodape h4{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#B7D95E}
+  .rodape-in button{display:block;border:0;background:none;color:inherit;padding:5px 0;text-align:left}
+  .rodape-in button:hover{text-decoration:underline}
+  .rodape-fim{max-width:1240px;margin:0 auto;padding:16px 32px 28px;border-top:1px solid rgba(255,255,255,.15);display:flex;justify-content:space-between;gap:16px;font-size:13px;color:#C7D6BE}
+
+  /* Início */
+  .home-busca{display:none}
+  .carrossel{border-radius:24px}
+  .banner{min-height:300px;padding:40px 56px}
+  .banner h2{font-size:42px;max-width:48%}
+  .banner .botao{min-height:48px;font-size:16px;padding:0 26px}
+  .banner .arte-banner{width:46%;right:24px;bottom:0}
+  .banner .arte-banner>div{transform:scale(1.3);transform-origin:right bottom}
+  .secao{margin:44px 16px 16px}
+  .secao h2{font-size:25px}
+  .secao button{font-size:15px}
+  .cat{font-size:14px}
+  .cat-icone{width:76px;height:76px;font-size:34px;border-radius:22px;transition:transform .15s,background .15s}
+  .cat:hover .cat-icone{transform:translateY(-3px);background:var(--linha)}
+
+  /* Produtos */
+  .grade{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+  .cartao-produto{padding:12px;transition:transform .15s,box-shadow .15s}
+  .cartao-produto:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(30,60,40,.14)}
+  .cartao-produto .arte{height:168px}
+  .cartao-produto .arte svg{height:146px}
+  .cartao-produto h3{font-size:15px;min-height:38px}
+  .cartao-produto .preco{font-size:18px}
+  .chips{flex-wrap:wrap;overflow:visible}
+
+  /* Carrinho e pagamento: lista à esquerda, resumo à direita */
+  .cart-layout,.pag-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;align-items:start;padding:0 16px}
+  .cart-itens .item-carrinho{margin:0 0 12px}
+  .resumo{position:sticky;top:96px;background:var(--papel);border:1.5px solid var(--linha);border-radius:22px;padding:22px}
+  .resumo h2{display:block;font-size:20px;font-weight:900;margin-bottom:12px}
+  .resumo .total-linha{margin:14px 0}
+  .resumo .acao-fixa{padding:0}
+  .resumo-lista{display:grid;gap:8px;font-size:14px;color:var(--suave);padding-bottom:12px;border-bottom:1.5px solid var(--linha)}
+  .resumo-lista div{display:flex;justify-content:space-between;gap:10px}
+  .pag-layout .secao{margin:0 0 14px}
+  .pag-layout .opcao-pag{margin:0 0 10px;width:100%}
+  .pag-layout .painel-cartao,.pag-layout .nota-pix{margin:0 0 14px}
+}
+
+/* Login em duas partes, só em telas largas */
+@media (min-width:900px){
+  .login-pagina{display:grid;grid-template-columns:1.05fr 1fr;gap:32px;min-height:100dvh;align-items:stretch;padding:32px}
+  .login-hero{display:flex;flex-direction:column;justify-content:center;gap:18px;padding:56px;border-radius:32px;color:#F6F9EE;
+    background:linear-gradient(135deg,#1F3F2B,#3F7F4A)}
+  .login-hero .logo-chip{width:72px;height:72px;border-radius:22px}
+  .login-hero h2{font-size:44px;font-weight:900;line-height:1.1}
+  .login-hero p{font-size:18px;opacity:.9;max-width:460px}
+  .login-hero ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:12px;font-weight:700}
+  .login-hero li::before{content:"✓";display:inline-grid;place-items:center;width:24px;height:24px;margin-right:10px;border-radius:50%;background:#9DC73F;color:#1B3324;font-size:14px}
+  .tela-login{align-self:center;width:100%;min-height:0;padding:24px 16px}
+  .tela-login .folhas{display:none}
+}
+@media (min-width:1200px){
+  .banner .arte-banner>div{transform:scale(1.8)}
+}
+
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important;animation-delay:0s !important}
 }
@@ -369,7 +496,30 @@ details p{color:var(--suave);margin-top:8px}
 </svg>
 
 <div class="telefone" id="app">
+  <header class="cab" id="cabecalho" hidden></header>
   <main id="tela"></main>
+  <footer class="rodape" id="rodape" hidden>
+    <div class="rodape-in">
+      <div>
+        <div class="marca-rod"><span class="logo-chip"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#logo"/></svg></span>Poupy</div>
+        <p>Juntos por um consumo mais inteligente. Produtos de comerciantes locais, com pagamento seguro.</p>
+      </div>
+      <div><h4>Loja</h4>
+        <button data-acao="ir" data-rota="categorias">Categorias</button>
+        <button data-acao="ir" data-rota="produtos">Produtos</button>
+        <button data-acao="ir" data-rota="favoritos">Favoritos</button></div>
+      <div><h4>Minha conta</h4>
+        <button data-acao="ir" data-rota="perfil">Perfil</button>
+        <button data-acao="ir" data-rota="compras">Minhas compras</button>
+        <button data-acao="ir" data-rota="enderecos">Endereços</button>
+        <button data-acao="ir" data-rota="formas">Formas de pagamento</button></div>
+      <div><h4>Atendimento</h4>
+        <button data-acao="ir" data-rota="ajuda">Ajuda</button>
+        <button data-acao="ir" data-rota="notificacoes">Notificações</button>
+        <button data-acao="ir" data-rota="config">Configurações</button></div>
+    </div>
+    <div class="rodape-fim"><span>© 2026 Poupy</span><span>Pague com PIX, débito ou crédito · Pagamento seguro e criptografado</span></div>
+  </footer>
   <nav class="nav" id="nav" aria-label="Navegação principal" hidden></nav>
 
   <!-- Menu lateral (três pontinhos) -->
@@ -611,6 +761,13 @@ const telas = {
   login(){
     const cadastro = estado.modoLogin === 'cadastro';
     return `
+    <div class="login-pagina">
+    <aside class="login-hero">
+      <span class="logo-chip">${logo('')}</span>
+      <h2>Juntos por um consumo mais inteligente</h2>
+      <p>Compre produtos de comerciantes locais com praticidade, no celular ou no computador.</p>
+      <ul><li>Pague com PIX, débito ou crédito</li><li>Pagamento seguro e criptografado</li><li>Produtos de comerciantes locais</li></ul>
+    </aside>
     <section class="tela-login">
       <svg class="folhas topo-esq" viewBox="0 0 150 120" aria-hidden="true"><path d="M0 20C40 0 100 10 120 60 60 70 10 60 0 20z" fill="#9DC73F" opacity=".55"/><path d="M0 60c30-14 70-6 90 34-44 2-80-8-90-34z" fill="#4E9A55" opacity=".5"/></svg>
       <svg class="folhas base-dir" viewBox="0 0 150 120" aria-hidden="true"><path d="M0 20C40 0 100 10 120 60 60 70 10 60 0 20z" fill="#9DC73F" opacity=".55"/><path d="M0 60c30-14 70-6 90 34-44 2-80-8-90-34z" fill="#4E9A55" opacity=".5"/></svg>
@@ -633,7 +790,7 @@ const telas = {
       <p class="ou">Ou</p>
       <button class="botao claro" data-acao="modo" data-modo="${cadastro?'entrar':'cadastro'}">${cadastro ? 'Já tenho uma conta' : 'Criar uma conta'}</button>
       <p class="rodape-login">Juntos por um consumo mais inteligente</p>
-    </section>`;
+    </section></div>`;
   },
 
   home(){
@@ -644,7 +801,7 @@ const telas = {
       <div class="marca">${logo('logo-mini')}<span>Poupy</span></div>
       <button class="icone-btn" data-acao="ir" data-rota="carrinho" aria-label="Abrir carrinho">${ico('cart')}<span class="selo selo-carrinho" hidden></span></button>
     </header>
-    <form class="busca" data-form="buscaHome" role="search">${ico('search')}<input name="q" type="search" placeholder="Buscar produtos, categorias..." aria-label="Buscar produtos ou categorias"></form>
+    <form class="busca home-busca" data-form="buscaHome" role="search">${ico('search')}<input name="q" type="search" placeholder="Buscar produtos, categorias..." aria-label="Buscar produtos ou categorias"></form>
 
     <div class="carrossel" id="carrossel" tabindex="0" aria-label="Ofertas e novidades">
       ${BANNERS.map(b => `<div class="banner ${b.classe}"><h2>${b.titulo}</h2><button class="botao" data-acao="${b.acao}" data-cat="${b.cat}">${b.botao}</button><div class="arte-banner">${b.arte}</div></div>`).join('')}
@@ -653,7 +810,7 @@ const telas = {
 
     <div class="secao"><h2>Categorias mais procuradas</h2><button data-acao="ir" data-rota="categorias">Ver todas</button></div>
     <div class="categorias">
-      ${CATEGORIAS.slice(0,5).map(c => `<button class="cat" data-acao="verCategoria" data-cat="${c.id}"><span class="cat-icone" aria-hidden="true">${c.emoji}</span>${c.curto}</button>`).join('')}
+      ${CATEGORIAS.map(c => `<button class="cat" data-acao="verCategoria" data-cat="${c.id}"><span class="cat-icone" aria-hidden="true">${c.emoji}</span>${c.curto}</button>`).join('')}
     </div>
 
     <div class="secao"><h2>Produtos novos</h2><button data-acao="verCategoria" data-cat="todos">Ver todos</button></div>
@@ -693,7 +850,7 @@ const telas = {
     const n = totalItens();
     if(!n) return `${barraSub('Carrinho','home')}${vazio('🛒','Seu carrinho está vazio','Adicione produtos para começar sua compra.','Ver produtos','produtos')}`;
     return `${barraSub(`Carrinho (${n})`,'home',`<button class="icone-btn" data-acao="cartLimpar" aria-label="Esvaziar carrinho">${ico('lixo')}</button>`)}
-    ${estado.carrinho.map(i => {
+    <div class="cart-layout"><div class="cart-itens">${estado.carrinho.map(i => {
       const p = porId(i.id);
       return `<div class="item-carrinho">
         <div class="arte">${arteProduto(p)}</div>
@@ -701,9 +858,10 @@ const telas = {
           <div class="qtd pequeno"><button data-acao="cartQtd" data-id="${p.id}" data-delta="-1" aria-label="Diminuir" ${i.qtd<=1?'disabled':''}>${ico('menos')}</button><output>${i.qtd}</output><button data-acao="cartQtd" data-id="${p.id}" data-delta="1" aria-label="Aumentar">${ico('mais')}</button></div></div>
         <div class="lado"><button class="lixo" data-acao="cartRemover" data-id="${p.id}" aria-label="Remover ${esc(p.nome)}">${ico('lixo')}</button></div>
       </div>`;
-    }).join('')}
-    <div class="total-linha"><span>Subtotal</span><strong>${brl(subtotal())}</strong></div>
-    <div class="acao-fixa"><button class="botao" data-acao="finalizar" id="botao-finalizar">Finalizar compra</button></div>`;
+    }).join('')}</div>
+    <aside class="resumo"><h2>Resumo do pedido</h2>
+    <div class="total-linha"><span>Subtotal (${n} ${n===1?'item':'itens'})</span><strong>${brl(subtotal())}</strong></div>
+    <div class="acao-fixa"><button class="botao" data-acao="finalizar" id="botao-finalizar">Finalizar compra</button></div></aside></div>`;
   },
 
   pagamento(){
@@ -715,6 +873,7 @@ const telas = {
     };
     const cartao = estado.pagamento === 'debito' || estado.pagamento === 'credito';
     return `${barraSub('Pagamento','carrinho')}
+    <div class="pag-layout"><div class="pag-form">
     <h2 class="secao" style="font-size:16px;font-weight:800">Forma de pagamento</h2>
     <div role="radiogroup" aria-label="Forma de pagamento">
     ${Object.entries(formas).map(([k,[nome,desc,ic]]) => `
@@ -729,10 +888,13 @@ const telas = {
         <label>Código (CVV)<input id="c-cvv" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" data-input="somenteNumeros"></label></div>
       ${estado.pagamento === 'credito' ? `<label>Parcelas<select id="c-parcelas">${Array.from({length:12},(_,k)=>k+1).map(n=>`<option value="${n}">${n}x de ${brl(total/n)}</option>`).join('')}</select></label>` : ''}
     </div>` : ''}
+    </div>
+    <aside class="resumo"><h2>Resumo do pedido</h2>
+    <div class="resumo-lista">${estado.carrinho.map(i => `<div><span>${i.qtd}x ${esc(porId(i.id).nome)}</span><span>${brl(porId(i.id).preco*i.qtd)}</span></div>`).join('')}</div>
     <div class="total-linha"><span>Total a pagar</span><strong>${brl(total)}</strong></div>
     <div class="acao-fixa"><p class="erro" id="erro-pag" role="alert" hidden style="margin:0 4px 8px"></p>
       <button class="botao" id="botao-pagar" data-acao="pagar">Pagar agora</button>
-      <p class="seguro">${ico('cadeado')}Pagamento seguro e criptografado</p></div>`;
+      <p class="seguro">${ico('cadeado')}Pagamento seguro e criptografado</p></div></aside></div>`;
   },
 
   sucesso(){
@@ -868,10 +1030,12 @@ function desenhar(rotaPedida){
   if(!estado.logado) rota = 'login';
   else if(!rota || rota === 'login') rota = 'home';
   if(!telas[rota]) rota = 'home';
+  const mudou = rota !== estado.rota;
   estado.rota = rota;
   const tela = $('#tela');
+  tela.dataset.rota = rota;
   tela.innerHTML = telas[rota]();
-  tela.scrollTop = 0;
+  if(mudou) window.scrollTo(0,0);
   if(rota === 'produtos') $('#lista-produtos').innerHTML = listaProdutos();
   atualizarNav(rota);
   atualizarSelos();
@@ -883,10 +1047,33 @@ function ir(rota){
   if(rota === 'produtos-limpar'){ estado.busca = ''; estado.categoria = 'todos'; rota = 'produtos'; }
   try{ location.hash = '#/' + rota; }catch(e){}
   desenhar(rota);
+  window.scrollTo(0,0);
 }
 window.addEventListener('hashchange', () => { if(rotaDoHash() !== estado.rota) desenhar(); });
 
+/* Cabeçalho e rodapé do site (só aparecem em telas largas, via CSS) */
+function desenharCabecalho(rota){
+  const cab = $('#cabecalho'), rod = $('#rodape');
+  const visivel = estado.logado && rota !== 'login';
+  cab.hidden = !visivel; rod.hidden = !visivel;
+  if(!visivel) return;
+  const aba = ABA_DA_ROTA[rota];
+  const link = (r, nome) => `<button data-acao="ir" data-rota="${r}" class="${aba===r?'ativo':''}" ${aba===r?'aria-current="page"':''}>${nome}</button>`;
+  const primeiro = esc(String((estado.usuario && estado.usuario.nome) || 'Minha conta').split(' ')[0]);
+  cab.classList.toggle('sem-busca', rota === 'produtos');
+  cab.innerHTML = `<div class="cab-in">
+    <button class="cab-marca" data-acao="ir" data-rota="home" aria-label="Poupy, página inicial">${logo('')}<span>Poupy</span></button>
+    <nav class="cab-nav" aria-label="Seções do site">${link('home','Início')}${link('categorias','Categorias')}${link('produtos','Produtos')}</nav>
+    <form class="busca cab-busca" data-form="buscaHome" role="search">${ico('search')}<input name="q" type="search" placeholder="Buscar produtos, categorias..." aria-label="Buscar produtos ou categorias"></form>
+    <div class="cab-acoes">
+      <button class="icone-btn ${aba==='favoritos'?'ativo':''}" data-acao="ir" data-rota="favoritos" aria-label="Favoritos">${ico('heart')}</button>
+      <button class="icone-btn ${aba==='carrinho'?'ativo':''}" data-acao="ir" data-rota="carrinho" aria-label="Carrinho">${ico('cart')}<span class="selo selo-carrinho" hidden></span></button>
+      <button class="icone-btn cab-perfil ${aba==='perfil'?'ativo':''}" data-acao="ir" data-rota="perfil" aria-label="Meu perfil">${ico('user')}<span>${primeiro}</span></button>
+    </div></div>`;
+}
+
 function atualizarNav(rota){
+  desenharCabecalho(rota);
   const nav = $('#nav');
   const aba = ABA_DA_ROTA[rota];
   nav.hidden = aba === undefined;
@@ -921,6 +1108,9 @@ function iniciarCarrossel(){
   }, 5500);
 }
 
+/* Trava a rolagem da página enquanto o menu ou a caixa do produto estiverem abertos */
+function travar(){ document.body.classList.toggle('trava', !$('#modal').hidden || !$('#gaveta').hidden); }
+
 /* Menu lateral */
 function abrirGaveta(){
   const itens = [['home','Início','home'],['categorias','Categorias','grid'],['compras','Meus pedidos','recibo'],['favoritos','Favoritos','heart'],['notificacoes','Notificações','sino'],['ajuda','Ajuda','ajuda'],['config','Configurações','config']];
@@ -930,14 +1120,14 @@ function abrirGaveta(){
     ${itens.map(([r,n,ic]) => `<button class="item-menu ${estado.rota===r?'ativo':''}" data-acao="ir" data-rota="${r}">${ico(ic)}${n}</button>`).join('')}
     <div class="info"><span>• Pague com PIX, débito ou crédito</span><span>• Pagamento seguro e criptografado</span><span>• Produtos de comerciantes locais</span></div>
     <button class="item-menu sair" data-acao="sair">${ico('sair')}Sair</button>`;
-  const g = $('#gaveta'); g.hidden = false;
+  const g = $('#gaveta'); g.hidden = false; travar();
   requestAnimationFrame(() => g.classList.add('aberta'));
   $('#painel-menu .item-menu').focus();
 }
 function fecharGaveta(imediato){
   const g = $('#gaveta'); if(g.hidden) return;
   g.classList.remove('aberta');
-  if(imediato) g.hidden = true; else setTimeout(() => { if(!g.classList.contains('aberta')) g.hidden = true; }, 300);
+  if(imediato){ g.hidden = true; travar(); } else setTimeout(() => { if(!g.classList.contains('aberta')){ g.hidden = true; travar(); } }, 300);
 }
 
 /* Caixa (modal) do produto */
@@ -970,7 +1160,7 @@ function abrirProduto(id){
   produtoAberto = porId(id); qtdModal = 1;
   desenharModal();
   const m = $('#modal'); const ja = !m.hidden;
-  m.hidden = false;
+  m.hidden = false; travar();
   $('#folha').scrollTop = 0;
   if(ja){ m.classList.add('aberto'); }
   else requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('aberto')));
@@ -979,7 +1169,7 @@ function abrirProduto(id){
 function fecharModal(imediato){
   const m = $('#modal'); if(m.hidden) return;
   m.classList.remove('aberto');
-  if(imediato) m.hidden = true; else setTimeout(() => { if(!m.classList.contains('aberto')) m.hidden = true; }, 300);
+  if(imediato){ m.hidden = true; travar(); } else setTimeout(() => { if(!m.classList.contains('aberto')){ m.hidden = true; travar(); } }, 300);
 }
 
 function alternarFavorito(id){
